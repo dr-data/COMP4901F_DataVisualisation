@@ -6,7 +6,7 @@ Project Title: Formula 1
 __Programmers' Note:__
 * There is a compatibility issues between different versions of d3.js
 * Syntax might have changed. 
-** Eg. d3.scale.linear() [v3] -> d3.scaleLinear() [v4]
+  * Eg. d3.scale.linear() [v3] -> d3.scaleLinear() [v4]
 
 __Links:__
 
