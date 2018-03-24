@@ -41,47 +41,62 @@ def getConstructorFrequency(filepath):
 
 	"""
 	consDict_raceList = getConstructorRaceList(filepath)
-	keys = consDict_raceList.keys()
-	keys.sort()
+	keys = sorted(consDict_raceList.keys(), key=lambda _key: int(_key))
 	for key in keys:
 		yield [key, len(consDict_raceList[key])]
 
-def getMostFreqCons(cons_Data, threshold = 0):
+def _getFreqCons(cons_Data, threshold = 0, listOut = False):
 	"""
 	Parameters
 	----------
-	filepath : string
-		The filepath relative to the parentPath
-
-	Returns
-	-------
-	dict{key:[list]}
-		{constructorID: [raceID]}
-
-	"""
-	# for consDict_raceList in cons_Data:
-	# 	if consDict_raceList[1] > threshold:
-	# 		yield consDict_raceList
-	return (consDict_raceList for consDict_raceList in cons_Data if consDict_raceList[1] > threshold)
-
-def getActiveCons(filepath, threshold = 0):
-	"""
-	Parameters
-	----------
-	filepath : string
-		The filepath relative to the parentPath
+	cons_Data: dict or list
+		It is a dictionary if constructor data is {consID: [raceID]}
+		It is a list if constructor data is [consID, race frequency]
 	threshold : int
-		The threshold value of the filter 
+		The threshold value of the filter
+	listOut: int or list
+		default: return frequency
+		True: return race list
 
 	Returns
 	-------
-	dict{key:[list]}
-		{constructorID: [raceID]}
+		default: return frequency
+		True: return race list
 
 	"""
+	if(listOut):
+		keys = sorted(cons_Data.keys(), key=lambda _key: int(_key))
+		for key in keys:
+			if(len(cons_Data[key]) < threshold):
+				del cons_Data[key]
+		return cons_Data
+	else:
+		return (consFreq for consFreq in cons_Data if consFreq[1] > threshold)
 
-	consFreq = getConstructorFrequency(filepath)
-	return getMostFreqCons(consFreq, threshold = threshold)
+def getActiveCons(filepath, threshold = 0, listOut = False):
+	"""
+	Parameters
+	----------
+	filepath : string
+		The filepath relative to the parentPath
+ 	threshold : int
+		The threshold value of the filter
+	listOut: int or list
+		default: return frequency
+		True: return race list
+
+	Returns
+	-------
+	default (False): [consID, race frequency]
+	True: {consID: [raceID]}
+
+	"""
+	if(listOut):
+		consRaceList = getConstructorRaceList(filepath)
+		return _getFreqCons(consRaceList, threshold, listOut)
+	else:
+		consFreq = getConstructorFrequency(filepath)
+		return _getFreqCons(consFreq, threshold, listOut)
 
 
 def plotActiveCons(filepath, threshold = 0):
@@ -106,8 +121,8 @@ def plotActiveCons(filepath, threshold = 0):
 		xAxis.append(cons[0])
 		yAxis.append(cons[1])
 
-	print xAxis
-	print yAxis
+	# print xAxis
+	# print yAxis
 	fig = plt.figure(1)
 	plt.plot(xAxis,yAxis, 'ro')
 	plt.xlabel('constructor ID')
@@ -120,13 +135,15 @@ def plotActiveCons(filepath, threshold = 0):
 if __name__ == "__main__":
 	print "start"
 	allConstructors = getActiveCons("constructorResults.csv")
-	activeConstructors = getActiveCons("constructorResults.csv", 100)
+	activeConsFreq = getActiveCons("constructorResults.csv", 100)
+	activeConsRace	= getActiveCons("constructorResults.csv", 100, True)
 	consFrequency = getConstructorFrequency("constructorResults.csv")
 	consRaceList = getConstructorRaceList("constructorResults.csv")
 	plotActiveCons("constructorResults.csv", 0)
 	plotActiveCons("constructorResults.csv", 100)
 	saveListAsTxt('allConstructors', allConstructors)
-	saveListAsTxt('activeConstructors', activeConstructors)
+	saveListAsTxt('activeConsFreq', activeConsFreq)
+	saveDictAsTxt('activeConsRace', activeConsRace)
 	saveListAsTxt('consFrequency', consFrequency)
 	saveDictAsTxt('consRaceList', consRaceList)
 

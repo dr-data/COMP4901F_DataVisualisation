@@ -5,14 +5,6 @@ import os
 from os.path import join
 from matplotlib import pyplot as plt
 from user_utility import getDataset, saveFigureAsPNG, saveListAsTxt, saveDictAsTxt
-"""
-	change the directory
-"""
-os.chdir('..')
-parentPath = os.getcwd() + os.path.sep
-dataPath = parentPath + "Dataset/"
-statsPath = parentPath + "Statistics/"
-figPath = parentPath + "Figures/"
 
 def getCircuitRaceList(filepath):
 	"""
@@ -51,47 +43,63 @@ def getCircuitFrequency(filepath):
 
 	"""
 	circuitDict_raceList = getCircuitRaceList(filepath)
-	keys = circuitDict_raceList.keys()
-	keys.sort()
+	keys = sorted(circuitDict_raceList.keys(), key=lambda _key: int(_key))
 	for key in keys:
 		yield [key, len(circuitDict_raceList[key])]
 
-def getMostFreqCircuit(circuit_Data, threshold = 0):
+def _getFreqCircuit(circuit_Data, threshold = 0, listOut = False):
 	"""
 	Parameters
 	----------
-	filepath : string
-		The filepath relative to the parentPath
-
-	Returns
-	-------
-	dict{key:[list]}
-		{circuitID: [raceID]}
-
-	"""
-	# for circuitDict_raceList in circuit_Data:
-	# 	if circuitDict_raceList[1] > threshold:
-	# 		yield circuitDict_raceList
-	return (circuitDict_raceList for circuitDict_raceList in circuit_Data if circuitDict_raceList[1] > threshold)
-
-def getActiveCircuit(filepath, threshold = 0):
-	"""
-	Parameters
-	----------
-	filepath : string
-		The filepath relative to the parentPath
+	circuit_Data: dict or list
+		It is a dictionary if circuit data is {circuitID: [raceID]}
+		It is a list if circuit data is [circuitID, race frequency]
 	threshold : int
-		The threshold value of the filter 
+		The threshold value of the filter
+	listOut: int or list
+		default: return frequency
+		True: return race list
 
 	Returns
 	-------
-	dict{key:[list]}
-		{circuitID: [raceID]}
+		default: return frequency
+		True: return race list
 
 	"""
+	if(listOut):
+		keys = sorted(circuit_Data.keys(), key=lambda _key: int(_key))
+		for key in keys:
+			if(len(circuit_Data[key]) < threshold):
+				del circuit_Data[key]
+		return circuit_Data
+	else:
+		return (circuitFreq for circuitFreq in circuit_Data if circuitFreq[1] > threshold)
 
-	circuitFreq = getCircuitFrequency(filepath)
-	return getMostFreqCircuit(circuitFreq, threshold = threshold)
+def getActiveCircuit(filepath, threshold = 0, listOut = False):
+	"""
+	Parameters
+	----------
+	filepath : string
+		The filepath relative to the parentPath
+ 	threshold : int
+		The threshold value of the filter
+	listOut: int or list
+		default: return frequency
+		True: return race list
+
+	Returns
+	-------
+	default (False): [circuitID, race frequency]
+	True: {circuitID: [raceID]}
+
+	"""
+	if(listOut):
+		circuitRaceList = getCircuitRaceList(filepath)
+		# print circuitRaceList
+		return _getFreqCircuit(circuitRaceList, threshold, listOut)
+	else:
+		circuitFreq = getCircuitFrequency(filepath)
+		return _getFreqCircuit(circuitFreq, threshold, listOut)
 
 def plotActiveCircuit(filepath, threshold = 0):
 	"""
@@ -115,8 +123,8 @@ def plotActiveCircuit(filepath, threshold = 0):
 		xAxis.append(circuit[0])
 		yAxis.append(circuit[1])
 
-	print xAxis
-	print yAxis
+	# print xAxis
+	# print yAxis
 	fig = plt.figure(1)
 	plt.plot(xAxis,yAxis, 'ro')
 	plt.xlabel('circuit ID')
@@ -133,13 +141,15 @@ if __name__ == "__main__":
 		obtain the frequency of active circuit and plot a scatter plot
 	"""
 	allCircuit = getActiveCircuit("races.csv")
-	activeCircuit = getActiveCircuit("races.csv", 20)
+	activeCircuitFreq = getActiveCircuit("races.csv", 20)
+	activeCircuitRace = getActiveCircuit("races.csv", 20, True)
 	circuitFrequency = getCircuitFrequency("races.csv")
 	circuitRaceList = getCircuitRaceList("races.csv")
 	plotActiveCircuit("races.csv", 0)
 	plotActiveCircuit("races.csv", 20)
 	saveListAsTxt('allCircuit', allCircuit)
-	saveListAsTxt('activeCircuit', activeCircuit)
+	saveListAsTxt('activeCircuitFreq', activeCircuitFreq)
+	saveDictAsTxt('activeCircuitRace', activeCircuitRace)
 	saveListAsTxt('circuitFrequency', circuitFrequency)
 	saveDictAsTxt('circuitRaceList', circuitRaceList)
 	print "end"
