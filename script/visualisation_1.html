@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<style>
+
+div.tooltip {	
+    position: absolute;			
+    text-align: left;			
+    width: 100px;					
+    height: 45px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+</style>
+<body>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<!-- // <script src="d3.js"></script> -->
+	<script src="http://d3js.org/topojson.v0.min.js"></script>
+
+	<script>
+
+	function exist(array, data){
+		for( i = 0; i < array.length; i++){
+			if(data == array[i]){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Get a subset of the data based on the group
+	function getFilteredData(data, ConstructorID) {
+		return data.filter(function(d) { return d.ConstructorID === parseInt(ConstructorID); });
+	}
+
+	function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+	  var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+	  return {
+	    x: centerX + (radius * Math.cos(angleInRadians)),
+	    y: centerY + (radius * Math.sin(angleInRadians))
+	  };
+	}
+
+	function describeArc(x, y, radius, startAngle, endAngle){
+
+    var start = polarToCartesian(x, y, radius, endAngle);
+    var end = polarToCartesian(x, y, radius, startAngle);
+
+    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+    var d = [
+        "M", start.x, start.y, 
+        "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+    ].join(" ");
+
+    return d;       
+}
+
+
+	const WIDTH = 500;
+	const HEIGHT = 500;
+
+	var margin ={top: 20, right: 20, bottom: 20, left: 20},
+		width = WIDTH -margin.left - margin.right,
+		height = HEIGHT - margin.top - margin.bottom;
+
+	var radius = d3.scale.linear()
+					.range([width/4, 0]);
+
+	var color = d3.scale.linear()
+					.range(["red", "blue"]);
+
+	function generateRandomRadian(status){
+		var min = -Math.PI, max = Math.PI;
+		var saved_y_radian = Math.random() * 2 * Math.PI;//(max - min) + min;
+		return saved_y_radian;
+	}
+
+	var svg = d3.select("body")
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom);
+
+	// Define the div for the tooltip
+	var div = d3.select("body").append("div")	
+	    .attr("class", "tooltip")				
+	    .style("opacity", 0)
+	    .style("font", "10px times");
+
+	d3.csv("DriverID_Points_ConstructorID_TotalPoints_NumDrivers.csv", function(data){
+		// console.log(error);
+		// console.log(data);
+		ConstructorIDArray = []
+		// Turn data to usable format
+		data.forEach(function(d){
+			// console.log(d);
+			d.DriverID = +d.DriverID;
+			d.Points = +d.Points;
+			d.ConstructorID = +d.ConstructorID;
+			d.TotalPoints = +d.TotalPoints;
+			d.NumberOfDrivers = +d.NumberOfDrivers;
+			d.AveragePoints = +d.AveragePoints;
+			d.NumberOfCollaborations = +d.NumberOfCollaborations;
+			if(exist(ConstructorIDArray, Number(d.ConstructorID))){
+				
+			}else{
+				ConstructorIDArray.push(Number(d.ConstructorID));
+			}
+		});
+
+		// console.log(ConstructorIDArray.sort(function(a, b){return a-b}))
+
+		var select = d3.select('body')
+			.append("label")
+			.text("ConstructorID")
+		  	.append('select')
+		  	.attr('class','ConstructorID-select')
+		    // .on('change',onchange)
+
+		var options = select
+		  	.selectAll('option')
+			.data(ConstructorIDArray.sort(function(a, b){return a-b}))
+			.enter()
+			.append('option')
+				.text(function (d) { return d; });
+
+		var yMin = d3.min(data, function(d){ return parseInt(d.NumberOfCollaborations);})
+
+		var yMax = d3.max(data, function(d){ return parseInt(d.NumberOfCollaborations);})
+
+		var	yRange1 = d3.scale.linear().domain([yMax,0]).range([0, height/4])
+
+		var yAxis1 = d3.svg.axis().scale(yRange1).tickSize(1).orient("right").tickSubdivide(true);
+
+		var	yRange2 = d3.scale.linear().domain([0, yMax]).range([0, height/4])
+
+		var yAxis2 = d3.svg.axis().scale(yRange2).tickSize(1).orient("right").tickSubdivide(true);
+
+		var	yRange3 = d3.scale.linear().domain([yMax, 0]).range([0, height/4])
+
+		radius.domain([0, yMax]);
+		color.domain(d3.extent(data, function(d){ return d.AveragePoints;}));
+
+		var yAxis3 = d3.svg.axis().scale(yRange3).tickSize(1).orient("right").tickSubdivide(true);
+
+		// New select element for allowing the user to select a group!
+		var $groupSelector = document.querySelector('.ConstructorID-select');
+		var groupData = getFilteredData(data, $groupSelector.value);
+
+		// g1 = svg.append("g")
+		//     .attr("class", "y axis")
+		//     .attr("transform", "translate(" + WIDTH/2 + "," + HEIGHT/2 + ")" )
+		//     .style("font", "14px times")
+		//     .call(yAxis1);
+
+		g2 = svg.append("g")
+		    .attr("class", "y axis")
+		    .attr("transform", "translate(" + WIDTH/2 + "," + (HEIGHT/4 + 10) + ")" )
+		    .style("font", "14px times")
+		    .call(yAxis2);
+
+		g3 = svg.append("g")
+		    .attr("class", "y axis")
+		    .attr("transform", "translate(" + WIDTH/2 + "," + HEIGHT/2 + ")" )
+		    .style("font", "14px times")
+		    .call(yAxis3);
+
+		g = svg.append("g");
+
+		for( i= 0; i < 11 ; i++){
+		g.append("circle")
+			.attr("class", "radial axis")
+			.attr("cx", WIDTH/2)
+			.attr("cy", HEIGHT/2)
+			.attr("r", radius(i))
+			.style("fill", "none")
+			.style("stroke-width", "1px")
+			.style("stroke", "steelblue")
+		}
+
+		function enterPoints(data){
+			g.selectAll("circle")
+			.data(data)
+			.enter()
+			.append("circle")
+			.attr("class","point")
+			.attr("transform",function(d){
+				var angle = generateRandomRadian();
+				var ra = radius(d.NumberOfCollaborations);
+				var x = WIDTH/2 + (ra) * Math.cos(angle);
+				var y = HEIGHT/2 + (ra) * Math.sin(angle);
+				return "translate(" + [x, y] + ")";
+			})
+			// .attr("cx", function(d) {return 0;})// (radius(d.NumberOfCollaborations))*Math.cos(generateRandomRadian());})
+			// .attr("cy", function(d) { return (radius(d.NumberOfCollaborations));})//*Math.sin(generateRandomRadian());})
+			.attr("r", function(d){return 3;})
+			.style("fill" , function(d){return color(d.AveragePoints);})
+	        .on("mouseover", handleMouseOver)
+			.on("mouseout", handleMouseOut)
+			.select(".ConstructorID-select")
+			.append("option")
+			.attr("value", function(d){ return "" + d.ConstructorID;})
+			.text(function(d){ return d.ConstructorID;})
+;
+		}
+
+		function exitPoints(data) {
+			g.selectAll(".point")
+			  .data(data)
+			  .exit()
+			  .remove();
+		}	
+
+		function updatePoints(data) {
+		  g.selectAll(".point")
+		      .data(data)
+		      .transition()
+				.attr("transform",function(d){
+				var angle = generateRandomRadian();
+				var ra = radius(d.NumberOfCollaborations);
+				var x = WIDTH/2 + (ra) * Math.cos(angle);
+				var y = HEIGHT/2 + (ra) * Math.sin(angle);
+				return "translate(" + [x, y] + ")";
+			})
+			// .attr("cx", function(d) {return 0;})// (radius(d.NumberOfCollaborations))*Math.cos(generateRandomRadian());})
+			// .attr("cy", function(d) { return (radius(d.NumberOfCollaborations));})//*Math.sin(generateRandomRadian());});
+		}	
+
+		$groupSelector.onchange = function(e) {
+		  var group = e.target.value;
+		  var groupData = getFilteredData(data, group);
+
+		  updatePoints(groupData);
+		  enterPoints(groupData);
+		  exitPoints(groupData);
+
+		};
+
+
+	// Create Event Handlers for mouse
+	function handleMouseOver(d, i) {  // Add interactivity
+		div.transition()		
+            .duration(200)		
+            .style("opacity", .9);		
+        div	.style("width", 60)
+        	.style("height", 70).html("DriverID: " + d.DriverID + "\n" + "Number of Collaborations: " + d.NumberOfCollaborations + "\n" + "AveragePoints: " + d.AveragePoints.toFixed(4) + "\n" + " TotalPoints: " + d.TotalPoints)
+            .style("left", (d3.event.pageX + 10) + "px")		
+            .style("top", (d3.event.pageY - 28) + "px");	
+        
+	      // Use D3 to select element, change color and size
+	      d3.select(this).attr(
+	      	{r: 6}
+	      	);
+	    }
+
+	function handleMouseOut(d, i){
+
+		div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+	      // Use D3 to select element, change color back to normal
+	      d3.select(this).attr(
+	      	{r: 3}
+	      	);
+	    }
+
+	});
+
+	</script>
+</body>
+</html>

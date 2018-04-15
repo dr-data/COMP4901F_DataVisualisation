@@ -33,13 +33,24 @@ def getDataset(filepath):
 	"""
 	dataDir = dataPath + filepath
 	with open(dataDir, 'rb') as csvfile:
-		data_col = csv.reader(csvfile)
+		data_col = csv.reader(x.replace('\0', '') for x in csvfile)
+		# data_col = csv.reader(csvfile)
 		if(filepath.find('constructorResults') != -1):
 			for data in data_col:
 				yield [data[1], data[2]]	# [raceID, constructorID]
 		if(filepath.find('races') != -1):
 			for data in data_col:
 				yield [data[0], data[1], data[3], data[4]]	# [raceID, year, circuitID, circuit name]
+		if(filepath.find('results') != -1):
+			for data in data_col:
+				try:
+					# if(data[14] == ""):
+					# 	continue
+					# 	yield [data[1], data[2], data[3], str(-1)] # [raceID, driverID, constructorID, missing rank]
+					# else:
+					yield [data[1], data[2], data[3], data[14], data[9]] # [raceID, driverID, constructorID, rank, points]
+				except ValueError:
+				    yield [data[1], data[2], data[3], -1]		# [raceID, driverID, constructorID, missing rank]
 
 def saveListAsTxt(filename, data):
 	statsDir = statsPath + filename + '.txt'

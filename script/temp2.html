@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+path {
+  stroke: white;
+  stroke-width: 0.25px;
+  fill: hsl(47, 71%, 54%);
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v0.min.js"></script>
+<script>
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var radius = d3.scale.linear()
+    .range([0, width/2]);
+
+// var x = d3.scale.linear()
+//     .range([-width/2, width/2]);
+
+// var y = d3.scale.linear()
+//     .range([height/2, -height/2]);
+  
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var color = d3.scale.linear()
+    .range(["red", "blue"]);
+
+// Coerce the strings to numbers.
+data.forEach(function(d) {
+	d.total_points = +d.total_points;
+  	d.driverID = +d.driverID;
+  	d.points = +d.points;
+  	d.constructorID = +d.constructorID;
+  	d.NumberOfDrivers = + d.NumberOfDrivers;
+
+});
+
+function generateRandomNumber() {
+    var min = -Math.PI,
+        max = Math.PI,
+    return highlightedNumber = Math.random() * (max - min) + min;
+    // alert(highlightedNumber);
+};
+
+// Compute the scales’ domains.
+color.domain(d3.extent(data,function(d){return d.total_points;})).nice();
+radius.domain(d3.extent(data, function(d){ return d.NumberOfDrivers;})).nice();
+// x.domain(d3.extent(data, function(d) { return d.x; })).nice();
+// y.domain(d3.extent(data, function(d) { return d.y; })).nice();
+
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+// var g = svg.append("g");
+
+// Get a subset of the data based on the group
+function getFilteredData(data, group) {
+	return data.filter(function(point) { return point.constructorID === parseInt(constructorID); });
+}
+
+// Helper function to add new points to our data
+function enterPoints(data) {
+  // Compute the scales’ domains.
+color.domain(d3.extent(data,function(d){return d.total_points;})).nice();
+radius.domain(d3.extent(data, function(d){ return d.NumberOfDrivers;})).nice();
+  // Add the points!
+
+
+  svg.selectAll(".point")
+    .data(data)
+    .enter().append("circle")
+    .attr("class", "point")
+    .attr('fill', 'red')
+    .attr("d", d3.svg.symbol().type("triangle-up"))
+    .attr("transform", function(d) { return "translate(" + (width + radius(d.NumberOfDrivers)*Math.cos(generateRandomNumber())) + "," + (height + radius(d.NumberOfDrivers)*Math.sin(generateRandomNumber())) + ")"; });
+}
+
+function exitPoints(data) {
+  svg.selectAll(".point")
+      .data(data)
+      .exit()
+      .remove();
+}
+
+function updatePoints(data) {
+  // Compute the scales’ domains.
+color.domain(d3.extent(data,function(d){return d.total_points;})).nice();
+radius.domain(d3.extent(data, function(d){ return d.NumberOfDrivers;})).nice();
+  svg.selectAll(".point")
+      .data(data)
+      .transition()
+	  .attr("transform", function(d) { return "translate(" + (+width + radius(d.NumberOfDrivers)*Math.cos(generateRandomNumber())) + "," + (+height + radius(d.NumberOfDrivers)*Math.sin(generateRandomNumber())) + ")"; });
+}
+
+
+// load and display the points constructor
+d3.csv("DriverID_Points_ConstructorID_TotalPoints_NumDrivers.csv", function(error, data) {
+  // Compute the scales’ domains.
+color.domain(d3.extent(data,function(d){return d.total_points;})).nice();
+radius.domain(d3.extent(data, function(d){ return d.NumberOfDrivers;})).nice();
+
+	 data.forEach(function(d) {
+		d.total_points = +d.total_points;
+	  	d.driverID = +d.driverID;
+	  	d.points = +d.points;
+	  	d.constructorID = +d.constructorID;
+	  	d.NumberOfDrivers = + d.NumberOfDrivers;
+
+	});
+
+	  updatePoints(data);
+	  enterPoints(data);
+	  exitPoints(data);
+	//        // New select element for allowing the user to select a group!
+	// var $groupSelector = document.querySelector('.constructorID-select');
+	// var groupData = getFilteredData(data, $groupSelector.value);
+
+	// // Enter initial points filtered by default select value set in HTML
+	// enterPoints(groupData);
+
+	// $groupSelector.onchange = function(e) {
+	//   var group = e.target.value;
+	//   var groupData = getFilteredData(data, group);
+
+	//   updatePoints(groupData);
+	//   enterPoints(groupData);
+	//   exitPoints(groupData);
+
+	// };
+});
+
+
+
+// Create Event Handlers for mouse
+function handleMouseOver(d, i) {  // Add interactivity
+
+      // Use D3 to select element, change color and size
+      d3.select(this).attr({
+        fill: "orange",
+        r: 5
+      });
+
+      // Specify where to put label of text
+      svg.append("text").attr({
+         id: "t" + projection([d.lng, d.lat])[0] + "-" + projection([d.lng, d.lat])[1] + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
+          x: function() { return projection([d.lng, d.lat])[0]- 30; },
+          y: function() { return projection([d.lng, d.lat])[1]- 15; }
+      })
+      .text(function() {
+        return [projection([d.lng, d.lat])[0], projection([d.lng, d.lat])[1]];  // Value of the text
+      });
+    }
+
+function handleMouseOut(d, i) {
+      // Use D3 to select element, change color back to normal
+      d3.select(this).attr({
+        fill: "black",
+        r: 3
+      });
+
+      // Select text by id and then remove
+      d3.select("#t" + projection([d.lng, d.lat])[0]+ "-" + projection([d.lng, d.lat])[1] + "-" + i).remove();  // Remove text location
+    }
+
+// // zoom and pan
+// var zoom = d3.behavior.zoom()
+//     .on("zoom",function() {
+//         g.attr("transform","translate("+ 
+//             d3.event.translate.join(",")+")scale("+d3.event.scale+")");
+//         g.selectAll("circle")
+//             .attr("d", path.projection(projection));
+//         g.selectAll("path")  
+//             .attr("d", path.projection(projection)); 
+
+//   });
+
+// svg.call(zoom)
+
+</script>
+<label>
+	ConstructorID:
+	<select class = "constructorID-select">
+	  <option value="14">14</option>
+	  <option value="17">17</option>
+	  <option value="18">18</option>
+	  <option value="19">19</option>
+	</select>
+</label>
+
+
+</body>
+</html>

@@ -26,7 +26,7 @@ def getYearRaceID(filepath):
 	Returns
 	-------
 	dictionary of list
-		{circuitID: [raceID]}
+		{year: [raceID]}
 
 	"""
 	YearRace_Data = getDataset(filepath)
@@ -57,7 +57,7 @@ def convertRaceToYear(targetDict, yearDict_raceList, freqOut = False):
 	Returns
 	-------
 	freqOut == False 
-		{circuitID: [year]}
+		{circuitID: [year]} or {consID: [year]}
 	freqOut == True 
 		{consID: {year:frequency}}
 
@@ -220,8 +220,9 @@ def displayBitMap(bitmap_key, mapName):
 
 if __name__ == "__main__":
 	yearDict_raceList = getYearRaceID("races.csv")
-	activeCircuitRace = getActiveCircuit("races.csv", 20, True)
-	activeConsRace = getActiveCons("constructorResults.csv", 100, True)
+	activeCircuitRace = getActiveCircuit("races.csv", -1, True)
+	activeConsRace = getActiveCons("constructorResults.csv", -1, True)
+	print len(activeConsRace)
 
 	# just to obtain the statistics of circuit_year and constructor_year_frequency
 	circuit_year_dict = convertRaceToYear(activeCircuitRace, yearDict_raceList, False)
