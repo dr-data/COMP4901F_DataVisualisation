@@ -71,14 +71,32 @@ div.tooltip {
 		height = HEIGHT - margin.top - margin.bottom;
 
 	var radius = d3.scale.linear()
-					.range([width/4, 0]);
+					.range([0, width/4]);
 
 	var color = d3.scale.linear()
 					.range(["red", "blue"]);
 
-	function generateRandomRadian(status){
+	// var angle1 = d3.scale.linear()
+	// 				.range([0,Math.PI/2]);
+
+	// var angle2 = d3.scale.linear()
+	// 				.range([Math.PI/2,Math.PI]);
+
+	// var angle3 = d3.scale.linear()
+	// 			.range([Math.PI,3*Math.PI/2]);
+
+	// var angle4 = d3.scale.linear()
+	// 			.range([3*Math.PI/2,2*Math.PI]);
+
+	function generateRandomRadian(){
 		var min = -Math.PI, max = Math.PI;
 		var saved_y_radian = Math.random() * 2 * Math.PI;//(max - min) + min;
+		return saved_y_radian;
+	}
+
+	function generateRandomRadianRestrict(start, end){
+		var min = start, max = end;
+		var saved_y_radian = Math.random() *(max - min) + min;
 		return saved_y_radian;
 	}
 
@@ -138,11 +156,11 @@ div.tooltip {
 
 		var yAxis1 = d3.svg.axis().scale(yRange1).tickSize(1).orient("right").tickSubdivide(true);
 
-		var	yRange2 = d3.scale.linear().domain([0, yMax]).range([0, height/4])
+		var	yRange2 = d3.scale.linear().domain([yMax, 0]).range([0, height/4])
 
 		var yAxis2 = d3.svg.axis().scale(yRange2).tickSize(1).orient("right").tickSubdivide(true);
 
-		var	yRange3 = d3.scale.linear().domain([yMax, 0]).range([0, height/4])
+		var	yRange3 = d3.scale.linear().domain([0, yMax]).range([0, height/4])
 
 		radius.domain([0, yMax]);
 		color.domain(d3.extent(data, function(d){ return d.AveragePoints;}));
@@ -191,7 +209,17 @@ div.tooltip {
 			.append("circle")
 			.attr("class","point")
 			.attr("transform",function(d){
-				var angle = generateRandomRadian();
+				var angle = 0;
+				if(d.TotalPoints == 0){
+					angle = generateRandomRadianRestrict(Math.PI/6, Math.PI/2 - Math.PI/6);
+				}else if(d.TotalPoints <= 50){
+					angle = generateRandomRadianRestrict(Math.PI/2 + Math.PI/6, Math.PI- Math.PI/6);
+				}else if(d.TotalPoints <= 100){
+					angle = generateRandomRadianRestrict(Math.PI + Math.PI/6, 3*Math.PI/2 - Math.PI/6);
+				}else{
+					angle = generateRandomRadianRestrict(3*Math.PI/2 + Math.PI/6, 2* Math.PI - Math.PI/6);
+				}
+				// var angle = generateRandomRadian();
 				var ra = radius(d.NumberOfCollaborations);
 				var x = WIDTH/2 + (ra) * Math.cos(angle);
 				var y = HEIGHT/2 + (ra) * Math.sin(angle);
@@ -222,7 +250,17 @@ div.tooltip {
 		      .data(data)
 		      .transition()
 				.attr("transform",function(d){
-				var angle = generateRandomRadian();
+				var angle = 0;
+				if(d.TotalPoints == 0){
+					angle = generateRandomRadianRestrict(Math.PI/6, Math.PI/2 - Math.PI/6);
+				}else if(d.TotalPoints <= 50){
+					angle = generateRandomRadianRestrict(Math.PI/2 + Math.PI/6, Math.PI- Math.PI/6);
+				}else if(d.TotalPoints <= 100){
+					angle = generateRandomRadianRestrict(Math.PI + Math.PI/6, 3*Math.PI/2 - Math.PI/6);
+				}else{
+					angle = generateRandomRadianRestrict(3*Math.PI/2 + Math.PI/6, 2* Math.PI - Math.PI/6);
+				}
+				// var angle = generateRandomRadian();
 				var ra = radius(d.NumberOfCollaborations);
 				var x = WIDTH/2 + (ra) * Math.cos(angle);
 				var y = HEIGHT/2 + (ra) * Math.sin(angle);
@@ -236,9 +274,10 @@ div.tooltip {
 		  var group = e.target.value;
 		  var groupData = getFilteredData(data, group);
 
-		  updatePoints(groupData);
+
 		  enterPoints(groupData);
 		  exitPoints(groupData);
+		  updatePoints(groupData);
 
 		};
 
