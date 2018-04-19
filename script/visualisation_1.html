@@ -34,8 +34,8 @@ div.tooltip {
 	}
 
 	// Get a subset of the data based on the group
-	function getFilteredData(data, ConstructorID) {
-		return data.filter(function(d) { return d.ConstructorID === parseInt(ConstructorID); });
+	function getFilteredData(data, ConstructorName) {
+		return data.filter(function(d) { return d.ConstructorName === ConstructorName; });
 	}
 
 	function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
@@ -114,7 +114,7 @@ div.tooltip {
 	d3.csv("DriverID_Points_ConstructorID_TotalPoints_NumDrivers.csv", function(data){
 		// console.log(error);
 		// console.log(data);
-		ConstructorIDArray = []
+		ConstructorNameArray = []
 		// Turn data to usable format
 		data.forEach(function(d){
 			// console.log(d);
@@ -125,10 +125,10 @@ div.tooltip {
 			d.NumberOfDrivers = +d.NumberOfDrivers;
 			d.AveragePoints = +d.AveragePoints;
 			d.NumberOfCollaborations = +d.NumberOfCollaborations;
-			if(exist(ConstructorIDArray, Number(d.ConstructorID))){
+			if(exist(ConstructorNameArray, d.ConstructorName)){
 				
 			}else{
-				ConstructorIDArray.push(Number(d.ConstructorID));
+				ConstructorNameArray.push(d.ConstructorName);
 			}
 		});
 
@@ -136,14 +136,14 @@ div.tooltip {
 
 		var select = d3.select('body')
 			.append("label")
-			.text("ConstructorID")
+			.text("Constructor Name")
 		  	.append('select')
-		  	.attr('class','ConstructorID-select')
+		  	.attr('class','ConstructorName-select')
 		    // .on('change',onchange)
 
 		var options = select
 		  	.selectAll('option')
-			.data(ConstructorIDArray.sort(function(a, b){return a-b}))
+			.data(ConstructorNameArray.sort())//function(a, b){return a-b}))
 			.enter()
 			.append('option')
 				.text(function (d) { return d; });
@@ -162,13 +162,23 @@ div.tooltip {
 
 		var	yRange3 = d3.scale.linear().domain([0, yMax]).range([0, height/4])
 
-		radius.domain([0, yMax]);
-		color.domain(d3.extent(data, function(d){ return d.AveragePoints;}));
-
 		var yAxis3 = d3.svg.axis().scale(yRange3).tickSize(1).orient("right").tickSubdivide(true);
 
+		var	xRange2 = d3.scale.linear().domain([yMax, 0]).range([0, height/4])
+
+		var xAxis2 = d3.svg.axis().scale(xRange2).tickSize(1).orient("bottom").tickSubdivide(true);
+
+		var	xRange3 = d3.scale.linear().domain([0, yMax]).range([0, height/4])
+
+		var xAxis3 = d3.svg.axis().scale(xRange3).tickSize(1).orient("bottom").tickSubdivide(true);
+
+		radius.domain([0, yMax]);
+		color.domain(d3.extent(data, function(d){ return d.AveragePoints; }));
+
+
+
 		// New select element for allowing the user to select a group!
-		var $groupSelector = document.querySelector('.ConstructorID-select');
+		var $groupSelector = document.querySelector('.ConstructorName-select');
 		var groupData = getFilteredData(data, $groupSelector.value);
 
 		// g1 = svg.append("g")
@@ -189,9 +199,59 @@ div.tooltip {
 		    .style("font", "14px times")
 		    .call(yAxis3);
 
+		g4 = svg.append("g")
+		    .attr("class", "x axis")
+		    .attr("transform", "translate(" + (WIDTH/4 + 10) + "," + (HEIGHT/2) + ")" )
+		    .style("font", "14px times")
+		    .call(xAxis2);
+
+		g5 = svg.append("g")
+		    .attr("class", "x axis")
+		    .attr("transform", "translate(" + WIDTH/2 + "," + HEIGHT/2 + ")" )
+		    .style("font", "14px times")
+		    .call(xAxis3);
+
+		// g6 = svg.append("g")
+		//     .attr("class", "background")
+		//     .attr("transform", "translate(" + WIDTH/2 + "," + HEIGHT/2 + ")" )
+		//     .style("font", "14px times")
+
 		g = svg.append("g");
 
-		for( i= 0; i < 11 ; i++){
+		var defs = svg.append("defs");
+
+		var gradient = defs.append("linearGradient")
+		   .attr("id", "svgGradient")
+		   .attr("x1", "0%")
+		   .attr("x2", "100%")
+		   .attr("y1", "0%")
+		   .attr("y2", "100%");
+
+		gradient.append("stop")
+		   .attr('class', 'start')
+		   .attr("offset", "0%")
+		   .attr("stop-color", "red")
+		   .attr("stop-opacity", 1);
+
+		gradient.append("stop")
+		   .attr('class', 'end')
+		   .attr("offset", "100%")
+		   .attr("stop-color", "blue")
+		   .attr("stop-opacity", 1);
+
+		var arc = d3.svg.arc()
+		    .innerRadius(0)
+		    .outerRadius(WIDTH/8)
+		    .startAngle(0) //converting from degs to radians
+		    .endAngle(2*Math.PI) //just radians
+
+		// g4.append("path")
+		//     .attr("d", arc)
+		//     .attr("stroke", "url(#svgGradient)")
+		//     .attr("stroke-width", WIDTH/4)
+  //           .attr("fill", "none");
+
+		for( i= 0; i < 12 ; i++){
 		g.append("circle")
 			.attr("class", "radial axis")
 			.attr("cx", WIDTH/2)
@@ -231,10 +291,10 @@ div.tooltip {
 			.style("fill" , function(d){return color(d.AveragePoints);})
 	        .on("mouseover", handleMouseOver)
 			.on("mouseout", handleMouseOut)
-			.select(".ConstructorID-select")
+			.select(".ConstructorName-select")
 			.append("option")
-			.attr("value", function(d){ return "" + d.ConstructorID;})
-			.text(function(d){ return d.ConstructorID;})
+			.attr("value", function(d){ return "" + d.ConstructorName;})
+			.text(function(d){ return d.ConstructorName;})
 ;
 		}
 

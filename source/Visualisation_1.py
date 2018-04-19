@@ -96,9 +96,31 @@ def getRaceDriverConstRankPts(filepath):
 	print "Data Extracted: " + str(dataObtained)
 	return cons_Data
 
+def getConstructorIDName(filepath):
+	"""
+	Parameters
+	----------
+	filepath : string
+		The filepath relative to the parentPath
+
+	Returns
+	-------
+	dict{key:string}
+		{ConstructorID: ConstructorName}
+
+	"""
+	cons_Data = getDataset(filepath)
+	# print list(cons_Data)
+	dataObtained = cons_Data.next()
+	print "Data Extracted: " + str(dataObtained)
+	ret_dict = {}
+	for _cons in cons_Data:
+		ret_dict[_cons[0]] = _cons[1]
+	return ret_dict
+
 def getDriverIDPointsConstructor(dataset):
 	ret = {"dataset": defaultdict(lambda: {driverID: "", points: 0, constructorID: ""})}
-	_listOfList = [["DriverID", "Points","ConstructorID","TotalPoints", "NumberOfDrivers", "AveragePoints", "NumberOfCollaborations"]]
+	_listOfList = [["DriverID", "Points","ConstructorID", "ConstructorName","TotalPoints", "NumberOfDrivers", "AveragePoints", "NumberOfCollaborations"]]
 	# {driverID: {constructorID: points}}
 	_temp = defaultdict(lambda:defaultdict(lambda:float(0)))
 	# {driverID: totalpoints}
@@ -123,6 +145,7 @@ def getDriverIDPointsConstructor(dataset):
 		_driverRace[data[1]].append(data[0])
 
 	yearDict_raceList = getYearRaceID("races.csv")
+	ConstructorIDName = getConstructorIDName("constructors.csv")
 	# Step 2 #
 	_driverYear = convertRaceToYear(_driverRace, yearDict_raceList)
 	keys_CDR = sorted(_consDriverRaceID.keys(), key = lambda _key: int(_key))
@@ -140,7 +163,8 @@ def getDriverIDPointsConstructor(dataset):
 		for key_temp_inner in keys_temp_inner:
 			_listOfList.append([key_temp, \
 				_temp[key_temp][key_temp_inner],\
-				 key_temp_inner, _totalpoints[key_temp], \
+				 key_temp_inner, ConstructorIDName[key_temp_inner],\
+				 _totalpoints[key_temp], \
 				 len(_consDriver[key_temp_inner]),\
 			 	_totalpoints[key_temp]/len(_driverYear[key_temp]), \
 			 	len(_consDriverYear[key_temp_inner][key_temp])])

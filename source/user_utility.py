@@ -51,6 +51,9 @@ def getDataset(filepath):
 					yield [data[1], data[2], data[3], data[14], data[9]] # [raceID, driverID, constructorID, rank, points]
 				except ValueError:
 				    yield [data[1], data[2], data[3], -1]		# [raceID, driverID, constructorID, missing rank]
+		if(filepath.find('constructors.csv') != -1):
+			for data in data_col:
+				yield [data[0], data[2]]	# [ConstructorID, ConstructorName]
 
 def saveListAsTxt(filename, data):
 	statsDir = statsPath + filename + '.txt'
