@@ -120,7 +120,7 @@ def getConstructorIDName(filepath):
 
 def getDriverIDPointsConstructor(dataset):
 	ret = {"dataset": defaultdict(lambda: {driverID: "", points: 0, constructorID: ""})}
-	_listOfList = [["DriverID", "Points","ConstructorID", "ConstructorName","TotalPoints", "NumberOfDrivers", "AveragePoints", "NumberOfCollaborations"]]
+	_listOfList = [["DriverID", "Points","ConstructorID", "ConstructorName","TotalPoints", "NumberOfDrivers", "AveragePoints", "NumberOfCollaborations", "Years"]]
 	# {driverID: {constructorID: points}}
 	_temp = defaultdict(lambda:defaultdict(lambda:float(0)))
 	# {driverID: totalpoints}
@@ -160,6 +160,13 @@ def getDriverIDPointsConstructor(dataset):
 	keys_temp = sorted(_temp.keys(), key = lambda _key: int(_key))
 	for key_temp in keys_temp:
 		keys_temp_inner = sorted(_temp[key_temp].keys(), key = lambda _key: int(_key))
+		# temp string for years
+		_temp_year_string = ""
+
+		for str_year in _driverYear[key_temp]:
+			# print _driverYear[key_temp]
+			_temp_year_string = _temp_year_string + "," + str(str_year)
+
 		for key_temp_inner in keys_temp_inner:
 			_listOfList.append([key_temp, \
 				_temp[key_temp][key_temp_inner],\
@@ -167,7 +174,8 @@ def getDriverIDPointsConstructor(dataset):
 				 _totalpoints[key_temp], \
 				 len(_consDriver[key_temp_inner]),\
 			 	_totalpoints[key_temp]/len(_driverYear[key_temp]), \
-			 	len(_consDriverYear[key_temp_inner][key_temp])])
+			 	len(_consDriverYear[key_temp_inner][key_temp]), \
+			 	_temp_year_string])
 	return {"listofList": _listOfList}
 
 if __name__ == '__main__':

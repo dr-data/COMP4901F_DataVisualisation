@@ -34,8 +34,23 @@ div.tooltip {
 	}
 
 	// Get a subset of the data based on the group
-	function getFilteredData(data, ConstructorName) {
+	function getFilteredData_Constructor(data, ConstructorName) {
 		return data.filter(function(d) { return d.ConstructorName === ConstructorName; });
+	}
+
+	function getFilteredData_Year(data, StartYear, EndYear) {
+		return data.filter(function(d) { 
+			var status = false;
+			_tempYearArray = d.Years.split(",");
+			// console.log(_tempYearArray);
+			// console.log(_tempYearArray.length);
+			for(i = 1; i < _tempYearArray.length; i++){
+				if((parseInt(_tempYearArray[i]) >= parseInt(StartYear)) && (parseInt(_tempYearArray[i]) <= parseInt(EndYear)))
+					status = true;
+					break; 
+				}
+			return status;
+			});
 	}
 
 	function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
@@ -76,18 +91,6 @@ div.tooltip {
 	var color = d3.scale.linear()
 					.range(["red", "blue"]);
 
-	// var angle1 = d3.scale.linear()
-	// 				.range([0,Math.PI/2]);
-
-	// var angle2 = d3.scale.linear()
-	// 				.range([Math.PI/2,Math.PI]);
-
-	// var angle3 = d3.scale.linear()
-	// 			.range([Math.PI,3*Math.PI/2]);
-
-	// var angle4 = d3.scale.linear()
-	// 			.range([3*Math.PI/2,2*Math.PI]);
-
 	function generateRandomRadian(){
 		var min = -Math.PI, max = Math.PI;
 		var saved_y_radian = Math.random() * 2 * Math.PI;//(max - min) + min;
@@ -115,6 +118,7 @@ div.tooltip {
 		// console.log(error);
 		// console.log(data);
 		ConstructorNameArray = []
+		YearsArray = []
 		// Turn data to usable format
 		data.forEach(function(d){
 			// console.log(d);
@@ -132,18 +136,50 @@ div.tooltip {
 			}
 		});
 
+		for(i = 1950; i < 2018; i++){
+			YearsArray.push(i);
+		}
 		// console.log(ConstructorIDArray.sort(function(a, b){return a-b}))
 
-		var select = d3.select('body')
+		// Create labels for choosing the Constructor for filtering
+		var selectConstructor = d3.select('body')
 			.append("label")
 			.text("Constructor Name")
 		  	.append('select')
 		  	.attr('class','ConstructorName-select')
 		    // .on('change',onchange)
 
-		var options = select
+		var ConstructorOptions = selectConstructor
 		  	.selectAll('option')
 			.data(ConstructorNameArray.sort())//function(a, b){return a-b}))
+			.enter()
+			.append('option')
+				.text(function (d) { return d; });
+
+		var selectStartYear = d3.select('body')
+			.append("label")
+			.text("Start Year")
+		  	.append('select')
+		  	.attr('class','StartYears-select')
+		    // .on('change',onchange)
+
+		var StartYearOptions = selectStartYear
+		  	.selectAll('option')
+			.data(YearsArray.sort(function(a, b){return a-b}))
+			.enter()
+			.append('option')
+				.text(function (d) { return d; });
+
+		var selectEndYear = d3.select('body')
+			.append("label")
+			.text("End Year")
+		  	.append('select')
+		  	.attr('class','EndYears-select')
+		    // .on('change',onchange)
+
+		var YearEndOptions = selectEndYear
+		  	.selectAll('option')
+			.data(YearsArray.sort(function(a, b){return a-b}))
 			.enter()
 			.append('option')
 				.text(function (d) { return d; });
@@ -178,8 +214,12 @@ div.tooltip {
 
 
 		// New select element for allowing the user to select a group!
-		var $groupSelector = document.querySelector('.ConstructorName-select');
-		var groupData = getFilteredData(data, $groupSelector.value);
+		var $ConstructorSelector = document.querySelector('.ConstructorName-select');
+		// var constructorData = getFilteredData_Constructor(data, $ConstructorSelector.value);
+		var $StartYearSelector = document.querySelector('.StartYears-select');
+		// var startyearData = getFilteredData_Year(data, $YearSelector.value);
+		var $EndYearSelector = document.querySelector('.EndYears-select');
+		// var endyearData = getFilteredData_Year(data, $YearSelector.value);
 
 		// g1 = svg.append("g")
 		//     .attr("class", "y axis")
@@ -218,32 +258,32 @@ div.tooltip {
 
 		g = svg.append("g");
 
-		var defs = svg.append("defs");
+		// var defs = svg.append("defs");
 
-		var gradient = defs.append("linearGradient")
-		   .attr("id", "svgGradient")
-		   .attr("x1", "0%")
-		   .attr("x2", "100%")
-		   .attr("y1", "0%")
-		   .attr("y2", "100%");
+		// var gradient = defs.append("linearGradient")
+		//    .attr("id", "svgGradient")
+		//    .attr("x1", "0%")
+		//    .attr("x2", "100%")
+		//    .attr("y1", "0%")
+		//    .attr("y2", "100%");
 
-		gradient.append("stop")
-		   .attr('class', 'start')
-		   .attr("offset", "0%")
-		   .attr("stop-color", "red")
-		   .attr("stop-opacity", 1);
+		// gradient.append("stop")
+		//    .attr('class', 'start')
+		//    .attr("offset", "0%")
+		//    .attr("stop-color", "red")
+		//    .attr("stop-opacity", 1);
 
-		gradient.append("stop")
-		   .attr('class', 'end')
-		   .attr("offset", "100%")
-		   .attr("stop-color", "blue")
-		   .attr("stop-opacity", 1);
+		// gradient.append("stop")
+		//    .attr('class', 'end')
+		//    .attr("offset", "100%")
+		//    .attr("stop-color", "blue")
+		//    .attr("stop-opacity", 1);
 
-		var arc = d3.svg.arc()
-		    .innerRadius(0)
-		    .outerRadius(WIDTH/8)
-		    .startAngle(0) //converting from degs to radians
-		    .endAngle(2*Math.PI) //just radians
+		// var arc = d3.svg.arc()
+		//     .innerRadius(0)
+		//     .outerRadius(WIDTH/8)
+		//     .startAngle(0) //converting from degs to radians
+		//     .endAngle(2*Math.PI) //just radians
 
 		// g4.append("path")
 		//     .attr("d", arc)
@@ -330,17 +370,46 @@ div.tooltip {
 			// .attr("cy", function(d) { return (radius(d.NumberOfCollaborations));})//*Math.sin(generateRandomRadian());});
 		}	
 
-		$groupSelector.onchange = function(e) {
-		  var group = e.target.value;
-		  var groupData = getFilteredData(data, group);
+		var current_constructor = 0;
+		var current_start_year = "1950";
+		var current_end_year = "2017";
+		$ConstructorSelector.onchange = function(e) {
+		  // var constructor = e.target.value;
+		  current_constructor = e.target.value;
+		  var constructorData = getFilteredData_Constructor(data, current_constructor);
+		  var yearConstructorData = getFilteredData_Year(constructorData, current_start_year, current_end_year);
 
-
-		  enterPoints(groupData);
-		  exitPoints(groupData);
-		  updatePoints(groupData);
+		  enterPoints(yearConstructorData);
+		  exitPoints(yearConstructorData);
+		  updatePoints(yearConstructorData);
 
 		};
 
+		$StartYearSelector.onchange = function(e) {
+		  // var constructor = e.target.value;
+		  current_start_year = e.target.value;
+		  var constructorData = getFilteredData_Constructor(data, current_constructor);
+		  var yearConstructorData = getFilteredData_Year(constructorData, current_start_year, current_end_year);
+
+
+		  enterPoints(yearConstructorData);
+		  exitPoints(yearConstructorData);
+		  updatePoints(yearConstructorData);
+
+		};
+
+		$EndYearSelector.onchange = function(e) {
+		  // var constructor = e.target.value;
+		  current_end_year = e.target.value;
+		  var constructorData = getFilteredData_Constructor(data, current_constructor);
+		  var yearConstructorData = getFilteredData_Year(constructorData, current_start_year, current_end_year);
+
+
+		  enterPoints(yearConstructorData);
+		  exitPoints(yearConstructorData);
+		  updatePoints(yearConstructorData);
+
+		};
 
 	// Create Event Handlers for mouse
 	function handleMouseOver(d, i) {  // Add interactivity
