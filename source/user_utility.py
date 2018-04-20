@@ -54,6 +54,10 @@ def getDataset(filepath):
 		if(filepath.find('constructors.csv') != -1):
 			for data in data_col:
 				yield [data[0], data[2]]	# [ConstructorID, ConstructorName]
+		if(filepath.find('drivers.csv') != -1):
+			for data in data_col:
+				yield [data[0], data[4], data[5]]	# [DriverID, Driver's forename, Drivers' surname]
+
 
 def saveListAsTxt(filename, data):
 	statsDir = statsPath + filename + '.txt'

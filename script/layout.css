@@ -1,0 +1,17 @@
+.radialChart{
+	width: 40%;
+	height: 100%;
+	float: left;
+}
+
+.worldMap{
+	width: 60%;
+	height: 100%;
+	float: left;
+}
+
+path {
+  stroke: white;
+  stroke-width: 0.25px;
+  fill: hsl(47, 71%, 54%);
+}

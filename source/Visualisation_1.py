@@ -118,9 +118,31 @@ def getConstructorIDName(filepath):
 		ret_dict[_cons[0]] = _cons[1]
 	return ret_dict
 
+def getDriverIDName(filepath):
+	"""
+	Parameters
+	----------
+	filepath : string
+		The filepath relative to the parentPath
+
+	Returns
+	-------
+	dict{key:string}
+		{ConstructorID: ConstructorName}
+
+	"""
+	driver_Data = getDataset(filepath)
+	# print list(cons_Data)
+	dataObtained = driver_Data.next()
+	print "Data Extracted: " + str(dataObtained)
+	ret_dict = {}
+	for _driver in driver_Data:
+		ret_dict[_driver[0]] = _driver[1] + " " + _driver[2]
+	return ret_dict
+
 def getDriverIDPointsConstructor(dataset):
 	ret = {"dataset": defaultdict(lambda: {driverID: "", points: 0, constructorID: ""})}
-	_listOfList = [["DriverID", "Points","ConstructorID", "ConstructorName","TotalPoints", "NumberOfDrivers", "AveragePoints", "NumberOfCollaborations", "Years"]]
+	_listOfList = [["DriverID", "DriverName" ,"Points","ConstructorID", "ConstructorName","TotalPoints", "NumberOfDrivers", "AveragePoints", "NumberOfCollaborations", "Years"]]
 	# {driverID: {constructorID: points}}
 	_temp = defaultdict(lambda:defaultdict(lambda:float(0)))
 	# {driverID: totalpoints}
@@ -146,6 +168,7 @@ def getDriverIDPointsConstructor(dataset):
 
 	yearDict_raceList = getYearRaceID("races.csv")
 	ConstructorIDName = getConstructorIDName("constructors.csv")
+	DriverName = getDriverIDName("drivers.csv")
 	# Step 2 #
 	_driverYear = convertRaceToYear(_driverRace, yearDict_raceList)
 	keys_CDR = sorted(_consDriverRaceID.keys(), key = lambda _key: int(_key))
@@ -157,7 +180,7 @@ def getDriverIDPointsConstructor(dataset):
 		for key_temp_DY in keys_temp_DY:
 			_consDriverYear[key_CDR][key_temp_DY] = _temp_DriverYear[key_temp_DY]
 
-	keys_temp = sorted(_temp.keys(), key = lambda _key: int(_key))
+	keys_temp = sorted(_temp.keys(), key = lambda _key: int(_key)) # driverID
 	for key_temp in keys_temp:
 		keys_temp_inner = sorted(_temp[key_temp].keys(), key = lambda _key: int(_key))
 		# temp string for years
@@ -169,6 +192,7 @@ def getDriverIDPointsConstructor(dataset):
 
 		for key_temp_inner in keys_temp_inner:
 			_listOfList.append([key_temp, \
+				DriverName[key_temp], \
 				_temp[key_temp][key_temp_inner],\
 				 key_temp_inner, ConstructorIDName[key_temp_inner],\
 				 _totalpoints[key_temp], \
