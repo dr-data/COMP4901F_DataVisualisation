@@ -4,6 +4,12 @@
 	float: left;
 }
 
+.invertRadialChart{
+	width: 40%;
+	height: 100%;
+	float: left;
+}
+
 .worldMap{
 	width: 60%;
 	height: 100%;

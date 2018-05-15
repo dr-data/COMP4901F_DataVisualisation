@@ -5,7 +5,7 @@ import os
 from os.path import join
 from matplotlib import pyplot as plt
 from user_utility import getDataset, saveFigureAsPNG, saveListAsTxt, saveDictAsTxt
-
+from Visualisation_3 import getRecentTracks
 def getCircuitRaceList(filepath):
 	"""
 	Parameters
@@ -21,12 +21,14 @@ def getCircuitRaceList(filepath):
 	"""
 	circuit_Data = getDataset(filepath)
 	dataObtained = circuit_Data.next()
+	RecentTracksList = getRecentTracks()
 	print "Data from file: " + str(dataObtained)
 	print "Data Extracted: " + 'circuitID ' + " raceID"
 	circuitDict_raceList = defaultdict(lambda:[])	# initialise the dictionary value to an empty list
 	for race_circuit in circuit_Data:
 		# print race_circuit
-		circuitDict_raceList[race_circuit[2]].append(race_circuit[0]) # {circuitID: [raceID]}
+		if(race_circuit[2] in RecentTracksList):
+			circuitDict_raceList[race_circuit[2]].append(race_circuit[0]) # {circuitID: [raceID]}
 	return circuitDict_raceList
 
 def getCircuitFrequency(filepath):

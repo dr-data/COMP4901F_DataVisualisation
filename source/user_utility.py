@@ -48,15 +48,29 @@ def getDataset(filepath):
 					# 	continue
 					# 	yield [data[1], data[2], data[3], str(-1)] # [raceID, driverID, constructorID, missing rank]
 					# else:
-					yield [data[1], data[2], data[3], data[14], data[9]] # [raceID, driverID, constructorID, rank, points]
+					yield [data[1], data[2], data[3], data[14], data[9], data[5], data[6], data[8]] 
+					# [raceID, driverID, constructorID, rank, points, grid, postion, positionOrder]
 				except ValueError:
-				    yield [data[1], data[2], data[3], -1]		# [raceID, driverID, constructorID, missing rank]
+				    yield [data[1], data[2], data[3], -1, data[9], data[5], data[6], data[8]]		# [raceID, driverID, constructorID, missing rank]
 		if(filepath.find('constructors.csv') != -1):
 			for data in data_col:
 				yield [data[0], data[2]]	# [ConstructorID, ConstructorName]
 		if(filepath.find('drivers.csv') != -1):
 			for data in data_col:
 				yield [data[0], data[4], data[5]]	# [DriverID, Driver's forename, Drivers' surname]
+		if(filepath.find('track_data_final') != -1):
+			for data in data_col:
+				yield data[0:36]
+		if(filepath.find('pitStops') != -1):
+			for data in data_col:
+				yield data
+		if(filepath.find('lapTimes') != -1):
+			for data in data_col:
+				yield data
+		if(filepath.find('PreprocessedDataset1') != -1):
+			for data in data_col:
+				yield data			
+
 
 
 def saveListAsTxt(filename, data):
@@ -128,6 +142,8 @@ def ones(n):
 		ret_list.append(1)
 	return ret_list
 
+def ifExist(item, itemList):
+	return (item in itemList)
 
 if __name__ == "__main__":
 	print "start"

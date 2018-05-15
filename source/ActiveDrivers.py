@@ -175,6 +175,41 @@ def getActiveDrivers():
 			_rank += 1
 		ret_dict_list[key_immdict] = imm_list
 	# print ret_dict_list["2007"]
-if __name__ == '__main__':
-	getActiveDrivers()
 
+
+def getRecentDrivers(startingYear):
+	"""
+	Parameters
+	----------
+	[raceID, driverID, constructorID, rank, points]
+
+	{year: {driverID:{ points : 0, rank : "", constructorID: ""}}}
+	then convert to 
+	{driverID: {year:{"rank" : rank, "points": points, "constructorID": consID}}}
+
+	Returns
+	-------
+	ret_dict: dict{dict{[list]}}
+		{driverID: {year:{"rank" : rank, "points": points, "constructorID": consID}}}
+	"""
+	RDCRP_data = getRaceDriverConstRankPts("results.csv") #[raceID, driverID, constructorID, rank, points]
+	yearDict_raceList = getYearRaceID("races.csv")
+	keys_yr = sorted(yearDict_raceList.keys(), key= lambda _key: int(_key))
+	def ifExist(driverID, _DriverIDList):
+		return (driverID in _DriverIDList)
+
+	_ret_DriverIDList = []
+	for data in RDCRP_data:
+		year = _getYearFromRaceID(data[0], yearDict_raceList, keys_yr)
+		# print year
+		if(int(year) > startingYear):
+			if(ifExist(data[1], _ret_DriverIDList)):
+				 i = 1 # dummy operation
+			else:
+				_ret_DriverIDList.append(data[1])
+	return _ret_DriverIDList	
+	
+
+if __name__ == '__main__':
+	# getActiveDrivers()
+	print len(getRecentDrivers(1990))

@@ -78,13 +78,13 @@ function generateRandomRadianRestrict(start, end){
 	return saved_y_radian;
 }
 
-var svg = d3.select(".radialChart")
+var svg = d3.select(".invertRadialChart")
 			.append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom);
 
 // Define the div for the tooltip
-var div = d3.select(".radialChart").append("div")	
+var div = d3.select(".invertRadialChart").append("div")	
     .attr("class", "tooltip")				
     .style("opacity", 0)
     .style("font", "10px times");
@@ -128,7 +128,7 @@ d3.csv("DriverID_Points_ConstructorID_TotalPoints_NumDrivers.csv", function(data
 	// console.log(ConstructorIDArray.sort(function(a, b){return a-b}))
 
 	// Create labels for choosing the Constructor for filtering
-	var selectConstructor = d3.select('.radialChart')
+	var selectConstructor = d3.select('.invertRadialChart')
 		.append("label")
 		.text("Constructor Name : ")
 	  	.append('select')
@@ -142,9 +142,9 @@ d3.csv("DriverID_Points_ConstructorID_TotalPoints_NumDrivers.csv", function(data
 		.append('option')
 			.text(function (d) { return d; });
 
-	d3.select(".radialChart").append("text").html("<br />")
+	d3.select(".invertRadialChart").append("text").html("<br />")
 
-	var selectStartYear = d3.select('.radialChart')
+	var selectStartYear = d3.select('.invertRadialChart')
 		// .append("br /")
 		.append("label")
 		.text("Start Year : ")
@@ -159,9 +159,9 @@ d3.csv("DriverID_Points_ConstructorID_TotalPoints_NumDrivers.csv", function(data
 		.append('option')
 			.text(function (d) { return d; });
 
-	d3.select(".radialChart").append("text").html("<br />")
+	d3.select(".invertRadialChart").append("text").html("<br />")
 
-	var selectEndYear = d3.select('.radialChart')
+	var selectEndYear = d3.select('.invertRadialChart')
 		// .append("br /")
 		.append("label")
 		.text("End Year : ")
@@ -200,8 +200,8 @@ d3.csv("DriverID_Points_ConstructorID_TotalPoints_NumDrivers.csv", function(data
 
 	var xAxis3 = d3.svg.axis().scale(xRange3).tickSize(1).orient("bottom").tickSubdivide(true);
 
-	radius.domain([0, yMax]);
-	color.domain(d3.extent(data, function(d){ return d.Points / d.NumberOfCollaborations; }));
+	radius.domain([yMax, 0]);
+	color.domain(d3.extent(data, function(d){ return parseFloat(d.Points) / parseFloat(d.NumberOfCollaborations); }));
 
 
 
