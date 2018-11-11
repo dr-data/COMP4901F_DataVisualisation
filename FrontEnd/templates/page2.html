@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+		body{
+			background-image: url(/static/image/paul-smith-193761-unsplash.jpg);
+
+			 /* Full height */
+			 height: 100%; 
+
+			/* Center and scale the image nicely */
+			background-attachment: fixed;
+
+			background-repeat: no-repeat;
+			background-size: cover;
+		}
+
+        #DriverListContainer {
+            /*background-image: url('/css/searchicon.png');*/
+            background-position: 10px 12px;
+            background-repeat: no-repeat;
+            width: 100%;
+            font-size: 12px;
+            padding: 16px 10px 10px 16px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+
+
+        #CircuitListContainer {
+            /*background-image: url('/css/searchicon.png');*/
+            background-position: 10px 12px;
+            background-repeat: no-repeat;
+            width: 100%;
+            font-size: 12px;
+            padding: 16px 10px 10px 16px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+
+        #DriverList {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #CircuitList {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #DriverList li a {
+            border: 1px solid #ddd;
+            margin-top: -1px; /* Prevent double borders */
+            /* background-VIZ1_color: #f6f6f6; */
+            padding: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            color: black;
+            display: block
+        }
+
+
+        #CircuitList li a {
+            border: 1px solid #ddd;
+            margin-top: -1px; /* Prevent double borders */
+            /* background-VIZ1_color: #f6f6f6; */
+            padding: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            color: black;
+            display: block
+        }
+
+        .unclicked {
+            background-color: #f6f6f6
+        }
+
+        .clicked {
+            background-color: aqua;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/visualisation_1_stylesheet.css')}}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+</head>
+<body style = "background-color: #D3D3D3" >
+<div class = "container">
+  <div class = "row" >
+    <div class ="col-12">
+      <h1>	
+		<font color="white">
+			F1 Visualisation
+		</font>
+      </h1>
+    </div>
+  </div>
+
+  <div style="filter:alpha(opacity=50); opacity:0.9;">
+	<div class = "row">
+		<div class ="col-6" >
+
+			<button type="button" class="btn btn-default btn-lg btn-block"><a href="page1.html" style = "color: #000000"> Overall Performance </a></button>
+			<!-- <h2></h2> -->
+		</div>
+
+		<div class ="col-6">
+			<button type="button" class="btn btn-default btn-lg btn-block"><a href="page2.html" style = "color: #000000"> First Lap Change </a></button>
+			<!-- <h2><a href="#"> First Lap Change </a></h2> -->
+		</div>
+	</div>
+  </div>
+  
+  <div class = "row">
+    <div class = "col-2" style="filter:alpha(opacity=50); opacity:0.85;">
+
+      <h4><font color="white">Drivers</font></h4>
+
+      <input type="text" id="DriverListContainer" onkeyup="DriverSearchFunction()" placeholder="Search for names.." title="Type in a name">
+
+		<ul id="DriverList">
+  		</ul>
+	</div>
+
+    <div class ="col-8" >
+      <div class = "row" id = "visualisation_1_heading">
+      	<h4><font color="white">Legend</font></h4>
+      </div>
+      <div class = "row" id = "viz1_legends" style = "background-color: #eeeeee">
+
+      </div>
+
+      <div class = "row" id = "instruction_heading">
+      	<h4><font color="white">Example</font></h4>
+      </div>
+
+      <div class = "row" id = "instruction" style="background-color: rgb(225, 230, 232, 0.90)">
+
+      	<img src ="/static/image/color_Instruction.png" alt ='instructions' width="700" style="margin-left: 30px;"/>
+
+      </div>
+
+       <div class = "row" id = "instruction_heading">
+      	<h4><font color="white">First Lap Change Distribution</font></h4>
+      </div>
+
+      <div class = "row" id = "visualisation_1" style = "background-color: rgb(225, 230, 232, 0.90) " >
+        
+      </div>
+
+      <div class = "row" id = "visualisation_2" style = "background-color: #e1e6e8" >
+        
+      </div>
+
+    </div>
+
+    <div class ="col-2" style="filter:alpha(opacity=50); opacity:0.85;">
+      
+      <h4><font color="white">Circuits</font> </h4>
+
+      <input type="text" id="CircuitListContainer" onkeyup="CircuitSearchFunction()" placeholder="Search for names.." title="Type in a name">
+
+      <ul id="CircuitList">
+      </ul>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- bootstrap 4 libraries CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+<!-- Visualisation libraries CDN -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+  <!-- // <script src="d3.js"></script> -->
+<script src="http://d3js.org/topojson.v0.min.js"></script>
+
+<script>
+
+
+	//Parameters
+	CircuitIDArray = [20, 1,2, 10, 9];
+
+	//Viz1 Legends
+	const VIZ1_LEGEND_SVG_WIDTH = 750;
+	const VIZ1_LEGEND_SVG_HEIGHT = 50;
+	const VIZ1_LEGEND_OFFSET = VIZ1_LEGEND_SVG_HEIGHT * 0.2;
+	const VIZ1_LEGEND_RIGHT_OFFSET = 50;
+	const VIZ1_LEGEND_GAP = VIZ1_LEGEND_SVG_WIDTH / 4;
+
+	// Viz1 
+	const VIZ1_SVG_WIDTH = VIZ1_LEGEND_SVG_WIDTH;
+	const VIZ1_SVG_HEIGHT = 700;
+	const BAR_GAP = VIZ1_SVG_HEIGHT/12 - 1;
+	const INNERBAR_OFFSET = BAR_GAP * 0.4;
+	const INNERBAR_WIDTH = BAR_GAP * 0.2;
+	const OUTERBAR_WIDTH = BAR_GAP * 0.5;
+	const OUTERBAR_OFFSET = BAR_GAP * 0.25;
+	const GRAPH_RIGHTOFFSET = 150;
+
+	//Viz 1 legends
+
+	//viz 2
+	const VIZ2_SVG_WIDTH = 500;
+	const VIZ2_SVG_HEIGHT = 500;
+	const INNER_RADIUS = 125;
+	const OUTER_RADIUS = VIZ2_SVG_WIDTH/2.0 * 0.8;
+
+	// Visualisation 1 legends
+	var svglegend1 = d3.select("#viz1_legends")
+						.append("svg")
+						.attr("id", "legends")
+						.attr("width", VIZ1_LEGEND_SVG_WIDTH)
+						.attr("height", VIZ1_LEGEND_SVG_HEIGHT);
+
+	var svglegend1label = d3.select("#viz1_legends")
+						.append("svg")
+						.attr("id" , "labels")
+						.attr("width", VIZ1_LEGEND_SVG_WIDTH)
+						.attr("height", VIZ1_LEGEND_SVG_HEIGHT);
+
+	for(var i = 0; i < 4; i++){
+		switch(i){
+			case 0: svglegend1.append("rect")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8 - 25,VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", VIZ1_color("first_quartile", "overall"))
+					svglegend1label.append("text")
+						.text("The first quartile")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", "#00000")
+					svglegend1label.append("text")
+						.text("of overall first lap change")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET + 15] + ")";
+						})
+						.style("fill", "#00000")
+						break;
+			case 1: svglegend1.append("rect")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8 - 25,VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", VIZ1_color("second_quartile", "overall"))
+					svglegend1label.append("text")
+						.text("The second quartile")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", "#00000")
+					svglegend1label.append("text")
+						.text("of overall first lap change")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET + 15] + ")";
+						})
+						.style("fill", "#00000")
+						break;
+
+			case 2: svglegend1.append("rect")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8 - 25,VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", VIZ1_color("third_quartile", "overall"))
+					svglegend1label.append("text")
+						.text("The third quartile")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", "#00000")
+					svglegend1label.append("text")
+						.text("of overall first lap change")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET + 15] + ")";
+						})
+						.style("fill", "#00000")
+						break;
+
+			case 3: svglegend1.append("rect")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8 - 25,VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", VIZ1_color("fourth_quartile", "overall"))
+					svglegend1label.append("text")
+						.text("The fourth quartile")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", "#00000")
+					svglegend1label.append("text")
+						.text("of overall first lap change")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET + 15] + ")";
+						})
+						.style("fill", "#00000")
+						break;
+
+		}
+	}
+
+	var svglegend1 = d3.select("#viz1_legends")
+						.append("svg")
+						.attr("id", "legends")
+						.attr("width", VIZ1_LEGEND_SVG_WIDTH)
+						.attr("height", VIZ1_LEGEND_SVG_HEIGHT);
+
+	var svglegend1label = d3.select("#viz1_legends")
+						.append("svg")
+						.attr("id" , "labels")
+						.attr("width", VIZ1_LEGEND_SVG_WIDTH)
+						.attr("height", VIZ1_LEGEND_SVG_HEIGHT);
+
+	for(var i = 0; i < 2; i++){
+		switch(i){
+
+			case 0: svglegend1.append("rect")
+						.attr("width", 50)
+						.attr("height", INNERBAR_WIDTH)
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_GAP + VIZ1_LEGEND_SVG_WIDTH/8 - 25, 2*VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", VIZ1_color("first_quartile","specific"))
+					svglegend1label.append("text")
+						.text("Min-Median-Max")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_SVG_WIDTH/4 + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", "#00000")
+					svglegend1label.append("text")
+						.text("of specific circuit")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_SVG_WIDTH/4 + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET + 15] + ")";
+						})
+						.style("fill", "#00000")
+						break;
+			case 1: svglegend1.append("rect")
+						.attr("width", 4)
+						.attr("height", INNERBAR_WIDTH + 6)
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_SVG_WIDTH/4 + VIZ1_LEGEND_SVG_WIDTH/8 - 2, 2* VIZ1_LEGEND_OFFSET - 3] + ")";
+						})
+						.style("fill", "#ffff00")
+					svglegend1label.append("text")
+						.text("The median of first lap change")
+						.style("font", "12px times")
+						.attr("width", 50)
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("text-anchor", "middle")
+						.attr("transform",function(){
+							return "translate(" + [i * VIZ1_LEGEND_SVG_WIDTH/4 + VIZ1_LEGEND_SVG_WIDTH/8, VIZ1_LEGEND_OFFSET] + ")";
+						})
+						.style("fill", "#00000")
+						break;
+
+		}
+	}
+
+
+	// Visualisation 1
+
+	var viz1_dataset1 = [];
+	var viz1_dataset2 = [];
+	var viz2_dataset1 = [];
+
+	function DriverSearchFunction() {
+	      var input, filter, ul, li, a, i;
+	      input = document.getElementById("DriverListContainer");
+	      filter = input.value.toUpperCase();
+	      ul = document.getElementById("DriverList");
+	      li = ul.getElementsByTagName("li");
+	      for (i = 0; i < li.length; i++) {
+	          a = li[i].getElementsByTagName("a")[0];
+	          if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+	              li[i].style.display = "";
+	          } else {
+	              li[i].style.display = "none";
+
+	          }
+	      }
+	  }
+
+	  function CircuitSearchFunction() {
+	      var input, filter, ul, li, a, i;
+	      input = document.getElementById("CircuitListContainer");
+	      filter = input.value.toUpperCase();
+	      ul = document.getElementById("CircuitList");
+	      li = ul.getElementsByTagName("li");
+	      for (i = 0; i < li.length; i++) {
+	          a = li[i].getElementsByTagName("a")[0];
+	          if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+	              li[i].style.display = "";
+	          } else {
+	              li[i].style.display = "none";
+
+	          }
+	      }
+	  }
+
+	var VIZ1_colorMin = 1;
+
+	var VIZ1_colorMax = 8;
+
+	var lengthMin = 0;
+
+	var lengthMax = 1000;
+
+	var margin ={top: 20, right: 20, bottom: 20, left: 20},
+		width = VIZ1_SVG_WIDTH - margin.left - margin.right - GRAPH_RIGHTOFFSET,
+		height = VIZ1_SVG_HEIGHT - margin.top - margin.bottom;
+
+	var length = d3.scale.linear()
+					.range([0, width]);
+	length.domain([0, 37]);
+
+	var moveRight = d3.scale.linear().range([0,width]).domain([-23,14]);
+
+	var invertLength = d3.scale.linear()
+					.range([lengthMin, lengthMax]).domain([0, width]);
+
+	var	xRange = d3.scale.linear().domain([14, -23]).range([0, width])
+
+	var xAxis = d3.svg.axis().scale(xRange).tickSize(1).orient("bottom").tickSubdivide(true);
+
+	NumberOfDriversSelected = 0;
+	NumberOfCircuitsSelected = 0;
+
+	var DriverIDArray = ["1", "2", "3", "4", "5"];
+	var CircuitID = "20";
+
+	function exist(array, data){
+		for( i = 0; i < array.length; i++){
+			if(data === array[i]){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Get a subset of the data based on the group
+	function getFilteredData_Drivers(data, DriverIDArray) {
+		return data.filter(function(d) { 
+			// console.log(d);
+			// console.log((DriverIDArray.indexOf(d.DriverId) > -1));
+			return ((DriverIDArray.indexOf(d.DriverId) > -1)) ; });
+	}
+
+	function getFilteredData_Circuit_Drivers(data, CircuitID , DriverIDArray) {
+		return data.filter(function(d) { 
+			// console.log(d);
+			// console.log((d.CircuitId == CircuitID) & (DriverIDArray.indexOf(d.DriverId) > -1));
+			if(DriverIDArray.length > 0){
+				return ((d.CircuitId == CircuitID) & (DriverIDArray.indexOf(d.DriverId) > -1)) ;
+			}else{
+				return ((d.CircuitId == CircuitID)) ; }
+			});
+		
+	}
+
+
+	function VIZ1_color(componentType, category = null){
+		if(category != null){
+			if(componentType.includes("fourth_quartile")){
+				if(category.includes("overall")){
+					return "#c7e9c0";
+				}else{
+					return "#fcbba1";
+				}
+			}
+
+			if(componentType.includes("third_quartile")){
+				if(category.includes("overall")){
+					return "#a1d99b";
+				}else{
+					return "#fc9272";
+				}
+			}
+
+			if(componentType.includes("second_quartile")){
+				if(category.includes("overall")){
+					return "#74c476";
+				}else{
+					return "#fb6a4a";
+				}
+			}
+
+			if(componentType.includes("first_quartile")){
+				if(category.includes("overall")){
+					return "#41ab5d";
+				}else{
+					return "#ef3b2c";
+				}
+			}
+		}
+
+
+		if(componentType.includes("quartile")){
+			return "#99000D";
+		}
+		if(componentType.includes("median")){
+			return "#ffff00";
+		}
+		if(componentType.includes("inner_bar")){
+			return "#b2df8a";
+		}
+		if(componentType.includes("outer_bar")){
+			return "#fb9a99"
+		}
+	}
+
+	var svg = d3.select("#visualisation_1")
+				.append("svg")
+				.attr("id", "viz1")
+				.attr("width", VIZ1_SVG_WIDTH)
+				.attr("height", VIZ1_SVG_HEIGHT);
+
+	// Define the div for the tooltip
+	var div = d3.select("#visualisation_1").append("div")	
+	    .attr("class", "tooltip")				
+	    .style("opacity", 0)
+	    .style("font", "10px times");
+
+	// var $BarcodeContainerSelector = querySelector("barcodeContainer");
+
+	d3.csv("/static/data/PreprocessedDataset2.csv", function(data){
+		// console.log(error);
+		// console.log(data);
+		data.forEach(function(d){
+			viz1_dataset1.push(d);
+		});
+
+		d3.csv("/static/data/PreprocessedDataset3.csv", function(data2){
+			viz1_dataset1 = data;
+			viz1_dataset2 = data2;
+			data2.forEach(function(d){
+				viz1_dataset2.push(d);
+			});
+
+			var _DriversOptions = [];
+			var _CircuitsOptions = [];
+			// Turn data to usable format
+			_DriversSelectionList = d3.select("#DriverList");
+			_CircuitsSelectionList = d3.select("#CircuitList");
+			data2.forEach(function(d){
+				// console.log(parseInt(d.Pattern_1.split("_")[0]));
+				// console.log((d.Pattern_1.split("_"))[1].replace("%",""));
+				if(_DriversOptions.length > -1){
+					if(exist(_DriversOptions, d.DriverId)){
+					
+					}else{
+						_DriversOptions.push(d.DriverId);
+						if(exist(DriverIDArray, d.DriverId)){
+							_DriversSelectionList.append("li").attr("id", String("Driver_" + d.DriverId))
+												.attr("class", "clicked")
+												.append("a").attr("href", "#")
+												.text(d.DriverName)
+												.style("font", "10px times")
+							console.log(d.DriverName)
+						}else{
+							_DriversSelectionList.append("li").attr("id", String("Driver_" + d.DriverId))
+												.attr("class", "unclicked")
+												.append("a").attr("href", "#")
+												.text(d.DriverName)
+												.style("font", "10px times")
+						}
+					}
+				}
+
+				if(_CircuitsOptions.length > -1){
+					if(exist(_CircuitsOptions, d.CircuitId)){
+
+					}else{
+						if(d.CircuitId == CircuitID){
+							_CircuitsOptions.push(d.CircuitId);
+							_CircuitsSelectionList.append("li").attr("id", String("Circuit_" + d.CircuitId))
+												.attr("class", "clicked")
+												.append("a").attr("href", "#")
+												.text(d.CircuitName)
+												.style("font", "10px times")
+						console.log(d.CircuitName)
+						}else{
+							_CircuitsOptions.push(d.CircuitId);
+							_CircuitsSelectionList.append("li").attr("id", String("Circuit_" + d.CircuitId))
+												.attr("class", "unclicked")
+												.append("a").attr("href", "#")
+												.text(d.CircuitName)
+												.style("font", "10px times")	
+						}
+
+					}
+
+				}
+
+
+			});
+			console.log("_DriversSelectionList");
+			console.log(_DriversSelectionList.length);
+			console.log("_CircuitsSelectionList");
+			console.log(_CircuitsSelectionList.length);
+			function enterBars(_data, _data2){
+				var i1 = -1;
+				var i2 = -1;
+				// console.log(_data.length);
+				for(var i = 0; i < _data.length; i++){
+					g = svg.append("g").attr("id", String(i));
+					var d = _data[i];
+					
+					g.append("rect")
+						.attr("transform",function(){
+							return "translate(" + [length(14 - parseInt(d.FirstLapChangeFirstQuartile)) + GRAPH_RIGHTOFFSET, i*BAR_GAP + OUTERBAR_OFFSET] + ")";
+						})
+						.attr("width", length((parseInt(d.FirstLapChangeFirstQuartile) - parseInt(d.FirstLapChangeMin))))
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("fill", function(){
+							return VIZ1_color("first_quartile", "overall");})
+						.style("stroke", "#000000")
+						.style("stroke-width", "1px");
+
+
+					// Display second quarter
+					g.append("rect")
+						.attr("transform",function(){
+							return "translate(" + [length(14 - parseInt(d.FirstLapChangeMedian)) + GRAPH_RIGHTOFFSET, i*BAR_GAP + OUTERBAR_OFFSET] + ")";
+						})
+						.attr("width", length((parseInt(d.FirstLapChangeMedian) - parseInt(d.FirstLapChangeFirstQuartile))))
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("fill", function(){
+							return VIZ1_color("second_quartile", "overall");})
+						.style("stroke", "#000000")
+						.style("stroke-width", "1px");
+
+					// Display third quarter
+					g.append("rect")
+						.attr("transform",function(){
+							return "translate(" + [length(14 -  parseInt(d.FirstLapChangeThirdQuartile)) + GRAPH_RIGHTOFFSET, i*BAR_GAP + OUTERBAR_OFFSET] + ")";
+						})
+						.attr("width", length((parseInt(d.FirstLapChangeThirdQuartile) - parseInt(d.FirstLapChangeMedian))))
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("fill", function(){
+							return VIZ1_color("third_quartile", "overall");})
+						.style("stroke", "#000000")
+						.style("stroke-width", "1px");
+
+					// Display fourth quarter
+					g.append("rect")
+						.attr("transform",function(){
+							return "translate(" + [length(14 - parseInt(d.FirstLapChangeMax)) + GRAPH_RIGHTOFFSET, i*BAR_GAP + OUTERBAR_OFFSET] + ")";
+						})
+						.attr("width", length((parseInt(d.FirstLapChangeMax) - parseInt(d.FirstLapChangeThirdQuartile))))
+						.attr("height", OUTERBAR_WIDTH)
+						.attr("fill", function(){
+							return VIZ1_color("fourth_quartile", "overall");})
+						.style("stroke", "#000000")
+						.style("stroke-width", "1px");
+						
+					// Display x Axis
+					gXAxis = svg.append("g")
+					    .attr("class", "x axis")
+					    .attr("transform", "translate(" + GRAPH_RIGHTOFFSET + "," + (i+1)*BAR_GAP + ")" )
+					    .style("font", "8px times")
+					    .call(xAxis);
+
+					for(var j = 0; j < _data2.length; j++){
+						d2 = _data2[j];
+						if((d2.DriverId === d.DriverId) & (d2.CircuitId === CircuitID)){
+							// display first quarter
+							g.append("rect")
+								.attr("transform",function(){
+									return "translate(" + [(length(14 - parseInt(d2.FirstLapChangeFirstQuartile))+ GRAPH_RIGHTOFFSET), (i*BAR_GAP + INNERBAR_OFFSET)] + ")";
+								})
+								.attr("width", length((parseInt(d2.FirstLapChangeFirstQuartile) - parseInt(d2.FirstLapChangeMin))))
+								.attr("height", INNERBAR_WIDTH)
+								.attr("fill", function(){
+									return VIZ1_color("first_quartile", "specific");})
+								.style("stroke", "#ef3b2c")
+								.style("stroke-width", "1px");
+
+							// display second quarter
+							g.append("rect")
+								.attr("transform",function(){
+									return "translate(" + [length(14 - parseInt(d2.FirstLapChangeMedian)) + GRAPH_RIGHTOFFSET, i*BAR_GAP + INNERBAR_OFFSET] + ")";
+								})
+								.attr("width", length((parseInt(d2.FirstLapChangeMedian) - parseInt(d2.FirstLapChangeFirstQuartile))))
+								.attr("height", INNERBAR_WIDTH)
+								.attr("fill", function(){
+									return VIZ1_color("first_quartile", "specific");})
+								.style("stroke", "#ef3b2c")
+								.style("stroke-width", "1px");
+							// display third quarter
+							g.append("rect")
+								.attr("transform",function(){
+									return "translate(" + [length(14 - parseInt(d2.FirstLapChangeThirdQuartile)) + GRAPH_RIGHTOFFSET, i*BAR_GAP + INNERBAR_OFFSET] + ")";
+								})
+								.attr("width", length((parseInt(d2.FirstLapChangeThirdQuartile) - parseInt(d2.FirstLapChangeMedian))))
+								.attr("height", INNERBAR_WIDTH)
+								.attr("fill", function(){
+									return VIZ1_color("first_quartile", "specific");})
+								.style("stroke", "#ef3b2c")
+								.style("stroke-width", "1px");
+							// display fourth quarter
+							g.append("rect")
+								.attr("transform",function(){
+									return "translate(" + [length(14 - parseInt(d2.FirstLapChangeMax)) + GRAPH_RIGHTOFFSET, i*BAR_GAP + INNERBAR_OFFSET] + ")";
+								})
+								.attr("width", length((parseInt(d2.FirstLapChangeMax) - parseInt(d2.FirstLapChangeThirdQuartile))))
+								.attr("height", INNERBAR_WIDTH)
+								.attr("fill", function(){
+									return VIZ1_color("first_quartile", "specific");})
+								.style("stroke", "#ef3b2c")
+								.style("stroke-width", "1px");
+
+								// Display Second Quartile / Median
+							g.append("rect")
+								.attr("transform",function(){
+									return "translate(" + [length(14 - parseInt(d2.FirstLapChangeMedian)) - 2 + GRAPH_RIGHTOFFSET, i*BAR_GAP + OUTERBAR_OFFSET - 3] + ")";
+								})
+								.attr("width", 4)
+								.attr("height", OUTERBAR_WIDTH + 6)
+								.attr("fill", function(){
+									return VIZ1_color("median");})
+							// 	//Display Third Quartile
+						
+						}
+
+					}
+
+
+					// Display label
+
+					g.append("text")
+					    .attr("transform", "translate(" + 0 + "," + (i+1)*BAR_GAP + ")" )
+				        .attr("x", 10)
+				        .attr("y", -INNERBAR_OFFSET)
+				        .text(d.DriverName);
+
+				}
+			}
+				console.log(DriverIDArray);
+				console.log(DriverIDArray.length);
+				console.log(CircuitID);
+				FilteredData = getFilteredData_Drivers(data, DriverIDArray);
+				FilteredData2 = getFilteredData_Circuit_Drivers(data2, CircuitID, DriverIDArray);
+				// console.log(FilteredData2)
+				// console.log(FilteredData2.length)
+				enterBars(FilteredData, FilteredData2);
+			  	NumberOfDriversSelected = 5;
+			  	NumberOfCircuitsSelected = 1;
+
+			  $('li').on('click', function() {
+			    temp_count = 0;
+			    if(this["id"].includes("Driver")){
+			      temp_count = NumberOfDriversSelected;
+			    }else{
+			      temp_count = NumberOfCircuitsSelected;
+			    }
+
+			    if ($(this).hasClass('unclicked')){
+
+			      	if(temp_count < 12){
+				        if(this["id"].includes("Driver")){
+					       	$(this).removeClass('unclicked');
+				        	$(this).addClass('clicked');
+				        	NumberOfDriversSelected += 1;
+				        	// console.log(this.innerHTML)
+				        	DriverIDArray.push(this.id.split("_")[1]);			          
+				        	d3.select("#viz1").selectAll("g").remove();
+							FilteredData = getFilteredData_Drivers(data, DriverIDArray);
+							FilteredData2 = getFilteredData_Circuit_Drivers(data2, CircuitID, DriverIDArray);
+							console.log(DriverIDArray);
+							enterBars(FilteredData, FilteredData2);
+				        }else{
+				        	if(temp_count < 1){ // number of circuits selected
+						        $(this).removeClass('unclicked');
+				        		$(this).addClass('clicked');
+					        	NumberOfCircuitsSelected += 1;
+					        	CircuitID = String(this.id.split("_")[1]);
+					        	console.log(CircuitID);
+					        	d3.select("#viz1").selectAll("g").remove();
+						  		d3.select("#viz2").selectAll("g").remove();
+							  	FilteredData = getFilteredData_Drivers(data, DriverIDArray);
+								FilteredData2 = getFilteredData_Circuit_Drivers(data2, CircuitID, DriverIDArray);
+								enterBars(FilteredData, FilteredData2);
+								enterArcs(viz2_dataset1);
+							}
+				        }
+			    	}
+
+			    }else if ($(this).hasClass('clicked')){
+
+			      if(temp_count > 0){
+			        $(this).removeClass('clicked');
+			        $(this).addClass('unclicked');
+			        if(this["id"].includes("Driver")){
+				        NumberOfDriversSelected -= 1;
+						var index = DriverIDArray.indexOf(String(this.id.split("_")[1]));
+						if (index > -1) {
+						  DriverIDArray.splice(index, 1);
+						  console.log("DriverIDArray length");
+						  console.log(DriverIDArray);
+						  if(DriverIDArray.length > 0){
+						  	d3.select("#viz1").selectAll("g").remove();
+							FilteredData = getFilteredData_Drivers(data, DriverIDArray);
+							FilteredData2 = getFilteredData_Circuit_Drivers(data2, CircuitID, DriverIDArray);
+							// console.log("FilteredData2");
+							// console.log(FilteredData2);
+							// console.log(FilteredData2.length)
+							enterBars(FilteredData, FilteredData2);
+						  }else if(DriverIDArray.length == 0){
+						  	d3.select("#viz1").selectAll("g").remove();
+						  }
+						}
+
+			        }else{
+				        NumberOfCircuitsSelected -= 1;
+				        d3.select("#viz1").selectAll("g").remove();
+						d3.select("#viz2").selectAll("g").remove();
+				        CircuitID = "";
+						FilteredData = getFilteredData_Drivers(data, DriverIDArray);
+						FilteredData2 = getFilteredData_Circuit_Drivers(data2, CircuitID, DriverIDArray);
+						// console.log(FilteredData2)
+						// console.log(FilteredData2.length)
+						enterBars(FilteredData, FilteredData2);
+			        }
+			      }
+
+			    }
+			  });
+
+
+		// Create Event Handlers for mouse
+		function handleMouseOver(d) {  // Add interactivity
+			div.transition()		
+	            .duration(200)		
+	            .style("opacity", .9);		
+	        div	.style("width", 60)
+	        	.style("height", 70).html("Min :")
+	            .style("left", (d3.event.pageX + 10) + "px")		
+	            .style("top", (d3.event.pageY - 28) + "px");	
+	        
+		      // Use D3 to select element, change VIZ1_color and size
+	  	      d3.select(this).attr(
+		      	{height: BAR_GAP*0.8}
+		      	);
+	  	      // console.log(this);
+		    }
+
+		function handleMouseOut(d){
+
+			div.transition()		
+	                .duration(500)		
+	                .style("opacity", 0);	
+		      // Use D3 to select element, change VIZ1_color back to normal
+		      d3.select(this).attr(
+		      	{height: BAR_GAP*0.6}
+		      	);
+		    }
+
+		});
+	});
+
+</script>
+
+</body>
+</html>
