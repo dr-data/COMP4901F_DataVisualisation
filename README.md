@@ -13,12 +13,12 @@ The selected topic is F1 Racing. The dataset is obtained from [Kaggle](https://w
 + D3.js
 
 # Project Topic: Formula 1
-![alt text](/images/Economics.jpg?raw=true "Economics of Formula 1")
-![alt text](/images/Betting.jpg?raw=true "Betting in Formula 1")
-![alt text](/images/Overview.jpg?raw=true "Visualisaion Overview")
-![alt text](/images/UserInteraction.jpg?raw=true "User Interaction")
-![alt text](/images/ParallelCoordinates.jpg?raw=true "Parallel Coordinates")
-![alt text](/images/TrackSimilarity.jpg?raw=true "Track Similarity")
-![alt text](/images/FirstLapChange.jpg?raw=true "First Lap Change Bullet Graph")
-![alt text](/images/Contribution.jpg?raw=true "Other Possible Contribution of Visualisation")
+![alt text](/images/Ecomonics.JPG?raw=true "Economics of Formula 1")
+![alt text](/images/Betting.JPG?raw=true "Betting in Formula 1")
+![alt text](/images/Overview.JPG?raw=true "Visualisaion Overview")
+![alt text](/images/UserInteraction.JPG?raw=true "User Interaction")
+![alt text](/images/ParallelCoordinates.JPG?raw=true "Parallel Coordinates")
+![alt text](/images/TrackSimilarity.JPG?raw=true "Track Similarity")
+![alt text](/images/FirstLapChange.JPG?raw=true "First Lap Change Bullet Graph")
+![alt text](/images/Contribution.JPG?raw=true "Other Possible Contribution of Visualisation")
 
