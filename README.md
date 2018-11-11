@@ -6,6 +6,8 @@ This course will introduce visualization techniques for data from everyday life,
 ## Project Description
 The selected topic is F1 Racing. The dataset is obtained from [Kaggle](https://www.kaggle.com/cjgdev/formula-1-race-data-19502017). Using the design concepts for data visualisation, a visualisation has been designed to search, visualise and infer some insights from the patterns found in the dataset.
 
+To run the program, go to __FrontEnd__. Run `python app.py` on python 2.7 with Flask installed. Copy the __URL__ generated in the command prompt and pase the __URL__ on your web browser.
+
 ## Stacks
 + Flask (python 2.7)
 + Python 2.7
