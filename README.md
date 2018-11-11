@@ -1,20 +1,24 @@
-# COMP4901F
-__Data Visualisation.__
+# COMP4901F_DataVisualisation
 
-Project Title: Formula 1
+## Course Description
+This course will introduce visualization techniques for data from everyday life, social media, business, scientific computing, medical imaging, etc. The topics include human visual system and perception, visual design principles, open- source visualization tools and systems, visualization techniques for CT/MRI data, computational fluid dynamics, graphs and networks, time-series data, text and documents, Twitter data, and spatio-temporal data. The labs and the course project will give students hands-on experience to turn their favorite data into beautiful visualizations.
 
-__Programmers' Note:__
-* There is a compatibility issues between different versions of d3.js
-* Syntax might have changed. 
-  * Eg. d3.scale.linear() [v3] -> d3.scaleLinear() [v4]
+## Project Description
+The selected topic is F1 Racing. The dataset is obtained from [Kaggle](https://www.kaggle.com/cjgdev/formula-1-race-data-19502017). Using the design concepts for data visualisation, a visualisation has been designed to search, visualise and infer some insights from the patterns found in the dataset.
 
-__Links:__
+## Stacks
++ Flask (python 2.7)
++ Python 2.7
++ Bootstrap
++ D3.js
 
-[__Google Drive__](https://l.facebook.com/l.php?u=https%3A%2F%2Fdrive.google.com%2Fdrive%2Ffolders%2F15vDGec7BfpjdJw06Ig_Y-8_Eb4fB-Owu%3Fusp%3Dsharing&h=ATNvCET1hW23pgEnmV4xF0ABSLMcZavDLv4MY6Fz2EUAIqd67G-ueRD8wzXgjYcvgLblh8QoouPmnGsoaxUug8o-Kch6uio7D1U-80qA3UEupmcPTsEoWg)
+# Project Topic: Formula 1
+![alt text](/images/Economics.jpg?raw=true "Economics of Formula 1")
+![alt text](/images/Betting.jpg?raw=true "Betting in Formula 1")
+![alt text](/images/Overview.jpg?raw=true "Visualisaion Overview")
+![alt text](/images/UserInteraction.jpg?raw=true "User Interaction")
+![alt text](/images/ParallelCoordinates.jpg?raw=true "Parallel Coordinates")
+![alt text](/images/TrackSimilarity.jpg?raw=true "Track Similarity")
+![alt text](/images/FirstLapChange.jpg?raw=true "First Lap Change Bullet Graph")
+![alt text](/images/Contribution.jpg?raw=true "Other Possible Contribution of Visualisation")
 
-[__D3.JS Github Repository__](https://github.com/d3/d3)
-
-__Descriptions:__
-* The Figures and Statistics files are empty. You have to run the ActiveConstructors.py and ActiveCircuits.py to obtain the figures and the statistics related to the dataset.
- * ActiveConstructors.py accessed "constructorResults.csv"
- * ActiveCircuits.py accessed "races.csv"
