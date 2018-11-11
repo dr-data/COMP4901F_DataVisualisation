@@ -12,7 +12,7 @@ import csv
 os.chdir('..')
 parentPath = os.getcwd() + os.path.sep
 dataPath = parentPath + "Dataset/"
-statsPath = parentPath + "Statistics/"
+statsPath = parentPath + "Dataset/"
 figPath = parentPath + "Figures/"
 
 # functions to obtain the active drivers
@@ -48,10 +48,10 @@ def getDataset(filepath):
 					# 	continue
 					# 	yield [data[1], data[2], data[3], str(-1)] # [raceID, driverID, constructorID, missing rank]
 					# else:
-					yield [data[1], data[2], data[3], data[14], data[9], data[5], data[6], data[8]] 
-					# [raceID, driverID, constructorID, rank, points, grid, postion, positionOrder]
+					yield [data[1], data[2], data[3], data[14], data[9], data[5], data[6], data[8], data[7]] 
+					# [raceID, driverID, constructorID, rank, points, grid, postion, positionOrder, positionText]
 				except ValueError:
-				    yield [data[1], data[2], data[3], -1, data[9], data[5], data[6], data[8]]		# [raceID, driverID, constructorID, missing rank]
+				    yield [data[1], data[2], data[3], -1, data[9], data[5], data[6], data[8], data[7]]		# [raceID, driverID, constructorID, missing rank]
 		if(filepath.find('constructors.csv') != -1):
 			for data in data_col:
 				yield [data[0], data[2]]	# [ConstructorID, ConstructorName]
@@ -68,6 +68,9 @@ def getDataset(filepath):
 			for data in data_col:
 				yield data
 		if(filepath.find('PreprocessedDataset1') != -1):
+			for data in data_col:
+				yield data
+		if(filepath.find('new_track_data') != -1):
 			for data in data_col:
 				yield data			
 

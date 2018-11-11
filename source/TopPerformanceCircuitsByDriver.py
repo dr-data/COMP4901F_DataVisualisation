@@ -26,7 +26,7 @@ def getDataFromResults(filepath):
 		(headings, data)
 
 	"""
-	RecentDriversList = getRecentDrivers(2000)
+	RecentDriversList = getRecentDrivers(1990)
 	circuitRaceList = getCircuitRaceList("races.csv")
 	circuitRaceKeys = circuitRaceList.keys()
 	ResultData = getDataset(filepath)
@@ -59,7 +59,7 @@ def getPitStops(filepath):
 		(headings, data, dictionary)
 
 	"""
-	RecentDriversList = getRecentDrivers(2000)
+	RecentDriversList = getRecentDrivers(1990)
 	circuitRaceList = getCircuitRaceList("races.csv")
 	circuitRaceKeys = circuitRaceList.keys()
 	PitStopsData = getDataset(filepath)
@@ -91,7 +91,7 @@ def getLapTimes(filepath):
 	tuple
 		(headings, data, dictionary, dictionary of dictionary)
 	"""
-	RecentDriversList = getRecentDrivers(2000)
+	RecentDriversList = getRecentDrivers(1990)
 	circuitRaceList = getCircuitRaceList("races.csv")
 	circuitRaceKeys = circuitRaceList.keys()
 	LapTimesData = getDataset(filepath)
@@ -125,17 +125,16 @@ def getLapTimes(filepath):
 
 def InsertFirstLapChange(headings, main_data, RaceLapDict):
 
-	_ret_data = []
 	# obtain additional data
 	_ret_dict_list = defaultdict(lambda:[])
- 	# main_data = ['raceId', 'driverId', 'constructorId', 'rank', 'points', 'grid', 'position', 'positionOrder', "positionText"]
+ 	# main_data = ['raceId', 'driverId', 'constructorId', 'rank', 'points', 'grid', 'position', 'positionOrder']
 	# initial dataset
 	headings.append("firstLapChange")
 	for main_d in main_data:
 		endingPosition = 1
 		initialLength = len(main_d)
-		# print "main_data"
-		# print main_data
+		print "main_data"
+		print main_data
 		# print str(RaceLapDict[int(main_d[0])][int(main_d[2])])
 		# print RaceLapDict[int(main_d[0])][int(main_d[2])]
 		# {raceID: {lap#: [driverID, laptime]}}
@@ -144,19 +143,13 @@ def InsertFirstLapChange(headings, main_data, RaceLapDict):
 			if(int(d[0]) == int(main_d[1])):
 				_ret_dict_list[main_d[1]].append([main_d[0], main_d[5], endingPosition, main_d[7]])
 				main_d.append(int(main_d[5]) - endingPosition)
-				_ret_data.append(main_d)
 				break
 			else:
 				endingPosition += 1
 
 		if(len(main_d) == initialLength):
-				# _ret_dict_list[main_d[1]].append([main_d[0], main_d[5], main_d[7], main_d[7]])
+				_ret_dict_list[main_d[1]].append([main_d[5], main_d[7], main_d[7]])
 				main_d.append(-999)
-				# del main_d
-
-	# del main_data 
-	# main_data = _ret_data
-	# print main_data
 	return _ret_dict_list
 
 def InsertPitStopsTime(headings, main_data, PitStopsDict):
@@ -188,19 +181,8 @@ def generateDataset():
 	InsertFirstLapChange(ResultHeadings, ResultData, RaceLapDict)
 	keys = PitStopsDict.keys()
 	InsertPitStopsTime(ResultHeadings, ResultData, PitStopsDict)
-
-	_data_needed = []
-	for data in ResultData:
-		if((data[7] >= "A") & (data[7] <= "Z")):
-			continue
-		else:
-			_data_needed.append(data)
-
-	_data_needed.insert(0,ResultHeadings)
-
-
-
-	saveLListAsCSV("PreprocessedDataset1", _data_needed)
+	ResultData.insert(0,ResultHeadings)
+	saveLListAsCSV("PreprocessedDataset1", ResultData)
 
 def getPreprocessedData(filepath):
 	"""
@@ -208,13 +190,13 @@ def getPreprocessedData(filepath):
 	----------
 	filepath: string
 		The directory to the file relative to the parentPath
-		# [raceId, driverId, constructorId, rank, points, grid, position, positionOrder, positionText , firstLapChange, pitStops]
+		# [raceId, driverId, constructorId, rank, points, grid, position, positionOrder, firstLapChange, pitStops]
 	Returns
 	-------
 	tuple
 		(headings, data, dictionary)
 	"""
-	RecentDriversList = getRecentDrivers(2000)
+	RecentDriversList = getRecentDrivers(1990)
 	circuitRaceList = getCircuitRaceList("races.csv")
 	circuitRaceKeys = circuitRaceList.keys()
 	PreprocessedData = getDataset(filepath)
@@ -302,7 +284,7 @@ def getOverallStatisticsOfFirstLapChange(headings):
 		circuitKeys = circuitRaceList.keys()
 		for circuitKey in circuitKeys:
 			if(data[0] in circuitRaceList[circuitKey]):
-				_dict_dict_list[data[1]][circuitKey].append(data[9])
+				_dict_dict_list[data[1]][circuitKey].append(data[8])
 
 	# print _dict_dict_list["4"]["32"]
 	driversKeys = sorted(_dict_dict_list.keys(), key = lambda _key: int(_key))
@@ -324,8 +306,6 @@ def getOverallStatisticsOfFirstLapChange(headings):
 				if(firstLapChangeVal != "-999"):
 					_FirstLapChangeList += (firstLapChangeVal + ",")
 					_change = int(firstLapChangeVal)
-					print "_change"
-					print _change
 					_tempContainer.append(_change)
 		_tempContainer.sort(key=lambda _key: int(_key))
 		# print _FirstLapChangeList
@@ -373,7 +353,7 @@ def getCircuitSpecificStatisticsOfFirstLapChange(headings):
 		circuitKeys = circuitRaceList.keys()
 		for circuitKey in circuitKeys:
 			if(data[0] in circuitRaceList[circuitKey]):
-				_dict_dict_list[data[1]][circuitKey].append(data[9])
+				_dict_dict_list[data[1]][circuitKey].append(data[8])
 
 	# print _dict_dict_list["4"]["32"]
 	driversKeys = sorted(_dict_dict_list.keys(), key = lambda _key: int(_key))
@@ -429,7 +409,7 @@ def getCircuitSpecificStatisticsOfFirstLapChange(headings):
 	saveLListAsCSV("PreprocessedDataset3", _ret_list)
 
 if __name__ == '__main__':
-	# generateDataset()
+	# generateDataset
 	OverallStatisticsHeadings = []
 	CircuitSpecificStatisticsHeadings = []
 	getOverallStatisticsOfFirstLapChange(OverallStatisticsHeadings)

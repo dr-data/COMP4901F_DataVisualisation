@@ -106,6 +106,7 @@ def convertRaceToYear(targetDict, yearDict_raceList, freqOut = False):
 		{consID: {year:frequency}}
 
 	"""
+	print targetDict.keys()
 	keys_t = sorted(targetDict.keys(), key=lambda _key: int(_key))
 	keys_y = sorted(yearDict_raceList.keys(), key=lambda _key: int(_key))
 
@@ -244,9 +245,10 @@ if __name__ == "__main__":
 	yearDict_raceList = getYearRaceID("races.csv")
 	# print yearDict_raceList
 	DRR_data = getDriverRankRace(dataset)
+	print DRR_data
 	DYR_data = convertDriverRankRacetoDriverYearRank(DRR_data, yearDict_raceList)
 	# plotDict_YearRank(DYR_data["27"], "27")
-
+ 	
 	activeDriversYear = getActiveDrivers(DRR_data, 3, "year")
 	activeDriversRaceID = getActiveDrivers(DRR_data, 100, "raceID")
 	# print "activeDriversYear"
